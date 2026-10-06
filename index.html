@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trial by Tribulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a single-column case file for phones. Sealed envelopes stack like evidence bags; the reading order is the spine. */
+:root{
+  --paper:#e9ecef; --card:#fbfbfa; --ink:#18212c; --muted:#5a6573; --line:#cfd5dc;
+  --stamp:#c4122f; --stamp-soft:#f6dde1; --evidence:#1d6886; --evidence-soft:#dcebf1;
+  --flap:#dfe3e8; --ok:#2f7d4f;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --stamp:#ff5266; --stamp-soft:#3a1d24; --evidence:#62b6d4; --evidence-soft:#15303b;
+  --flap:#232c37; --ok:#5cc28a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --stamp:#ff5266; --stamp-soft:#3a1d24; --evidence:#62b6d4; --evidence-soft:#15303b;
+  --flap:#232c37; --ok:#5cc28a; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+button,input{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--evidence);outline-offset:2px}
+
+/* Masthead */
+.mast{display:flex;flex-direction:column;gap:8px;padding-top:8px}
+.mast h1{font-size:clamp(34px,9vw,52px);font-weight:800;font-stretch:72%;letter-spacing:-.01em;text-transform:uppercase}
+.mast h1 span{color:var(--stamp)}
+.mast p{margin:0;color:var(--muted);font-size:15px}
+
+/* Setup */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-family:var(--f-display);font-weight:650;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-width:44px;height:44px;padding:0 12px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;font-family:var(--f-mono);font-weight:600;font-size:16px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.btn{height:48px;padding:0 20px;border:0;border-radius:4px;background:var(--stamp);color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.note{font-size:14px;color:var(--muted);margin:0}
+
+/* Seat bar */
+.seatbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:10px;border-bottom:1px solid var(--line)}
+.seatbar strong{font-family:var(--f-display);font-size:18px;font-weight:750;font-stretch:85%}
+.seatbar button{background:none;border:0;color:var(--evidence);font-family:var(--f-mono);font-size:13px;text-decoration:underline;padding:8px 0}
+
+/* Briefing */
+details.brief{background:var(--card);border:1px solid var(--line);border-radius:6px}
+details.brief summary{list-style:none;padding:14px 18px;font-family:var(--f-display);font-weight:700;font-size:17px;display:flex;justify-content:space-between;cursor:pointer}
+details.brief summary::-webkit-details-marker{display:none}
+details.brief summary::after{content:"+";font-family:var(--f-mono);color:var(--muted)}
+details.brief[open] summary::after{content:"–"}
+.brief .in{padding:0 18px 18px;display:flex;flex-direction:column;gap:12px}
+.brief p{margin:0}
+.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+
+/* Section heads */
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec>h2{font-size:22px;font-weight:750;font-stretch:85%}
+
+/* Reading order */
+.order{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.order li{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);font-size:15px}
+.order .n{font-family:var(--f-mono);color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.order .who{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.order li.mine{background:var(--stamp-soft)}
+.order li.mine .who{color:var(--stamp);font-weight:600}
+.order li.analyst .t{color:var(--evidence)}
+
+/* Envelopes */
+.env{position:relative;background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.env .flapwrap{perspective:900px;height:64px;position:relative;background:var(--flap)}
+.env .flap{position:absolute;inset:0;background:var(--flap);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;filter:brightness(.94);transition:transform .7s cubic-bezier(.5,.1,.3,1)}
+.env .flapline{position:absolute;inset:0;background:linear-gradient(to bottom right,transparent calc(50% - .5px),var(--line) 50%,transparent calc(50% + .5px)) left/50% 100% no-repeat,linear-gradient(to bottom left,transparent calc(50% - .5px),var(--line) 50%,transparent calc(50% + .5px)) right/50% 100% no-repeat}
+.env .label{position:absolute;left:16px;top:12px;font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);z-index:2}
+.stamp{position:absolute;right:14px;top:14px;z-index:2;font-family:var(--f-display);font-weight:800;font-stretch:70%;font-size:22px;letter-spacing:.06em;color:var(--stamp);border:2.5px solid var(--stamp);padding:0 8px;transform:rotate(-7deg);opacity:.85}
+.env .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.env h3{font-size:24px;font-weight:800;font-stretch:80%;text-transform:uppercase}
+.lockq{font-size:17px;margin:0}
+.lockfrom{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin:0}
+.ans{display:flex;gap:8px;flex-wrap:wrap}
+.ans input{flex:1 1 160px;min-width:0;height:48px;padding:0 12px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font-family:var(--f-mono);font-size:16px}
+.msg{font-size:14px;margin:0;min-height:1.2em}
+.msg.bad{color:var(--stamp)}
+.hint{font-size:14px;background:var(--paper);border-left:3px solid var(--muted);padding:8px 12px;margin:0}
+.env.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.env.opening .flap{transform:rotateX(180deg)}
+.env.opening .stamp{transition:opacity .3s;opacity:0}
+
+/* Open card */
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card .head{padding:16px 18px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.card .head h3{font-size:clamp(24px,6.4vw,30px);font-weight:800;font-stretch:78%;text-transform:uppercase}
+.card .head .read{font-family:var(--f-mono);font-size:12.5px;color:var(--stamp)}
+.card .content{padding:16px 18px 20px;display:flex;flex-direction:column;gap:14px}
+.card ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:7px}
+.card ul ul{margin-top:7px}
+.card p{margin:0}
+.card.fresh{animation:rise .6s ease-out}
+@keyframes rise{from{transform:translateY(16px);opacity:.3}to{transform:none;opacity:1}}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+figure .plate{background:#fff;border:1px solid var(--line);border-radius:4px;padding:6px;overflow:hidden}
+figure img{display:block;width:100%;height:auto}
+figcaption{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.doc{border:1px solid var(--line);border-radius:4px;padding:14px 16px;font-size:14.5px;display:flex;flex-direction:column;gap:9px;background:var(--paper)}
+.doc .dh{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.doc h4{margin:0;font-family:var(--f-display);font-size:17px;font-weight:700}
+
+/* Analyst */
+.card.analyst .head{background:var(--evidence-soft)}
+.card.analyst .head .read{color:var(--evidence)}
+.env.analyst .stamp{color:var(--evidence);border-color:var(--evidence)}
+.finding{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.finding h4{margin:0;font-family:var(--f-display);font-size:18px;font-weight:750;font-stretch:88%}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 14px;font-size:15px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .curve{fill:none;stroke:var(--evidence);stroke-width:2.5}
+.chart .area{fill:var(--evidence-soft)}
+.chart .mk{stroke:var(--stamp);stroke-width:1.5;stroke-dasharray:3 3}
+.chart .mkdot{fill:var(--stamp)}
+.chart .mklab{fill:var(--ink);font-size:11px}
+.draft{align-self:flex-start;font-family:var(--f-mono);font-size:11.5px;color:var(--stamp);border:1px dashed var(--stamp);padding:2px 8px;border-radius:3px}
+.empty{font-size:15px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- Facilitator settings ---------- */
+const ANALYST_CODE = "outside view";   // announce this to release the analyst's report
+const MASTER_CODE  = "tribulation";    // opens any sealed envelope if a table gets stuck
+const SHOW_DRAFT_BADGE = false;
+/* Reference class, rounded so nothing reads as non-public data */
+const RCF = {
+  costMedianUplift: 0.30,   // P50 cost overrun, comparable projects
+  costP80Uplift:    0.65,   // P80 cost overrun
+  schedMedianYears: 8.5,    // P50 duration, start of construction to opening
+  schedP80Years:    12,     // P80 duration
+  planYears:        6,      // XRL planned duration
+  startContingency: 0.04,
+  peakContingency:  0.15,
+  mtrEstimateUplift: 71.5/66.8 - 1
+};
+
+/* ---------- Cards, in unlock order ---------- */
+const img=(src,cap)=>`<figure><div class="plate"><img src="${src}" alt="${cap}" loading="lazy"></div><figcaption>${cap}</figcaption></figure>`;
+
+const CARDS = [
+{ id:"victim", tag:"Envelope 1", label:"The Victim", title:"The Express Rail Link",
+  body:`<ul>
+<li>You are a high-speed rail project.</li>
+<li>Once completed you will connect Hong Kong to the high-speed rail network of Mainland China (the Shenzhen–Guangzhou line).</li>
+<li>You are not particularly long at only 26km.</li>
+<li>But you are complex:<ul>
+<li>You are the first high-speed rail project outside Mainland China.</li>
+<li>You are working with both the Mainland and the Hong Kong train operation and signalling systems. Hong Kong follows UK standards.</li>
+<li>All 26km of rail are fully underground.</li>
+<li>The station in West Kowloon is going to be the largest high-speed rail station in the world. It will be a signature architecture building.</li>
+<li>You are also the first rail project financed by Government in Hong Kong. Previous projects were financed by MTR out of their earnings from property development on top of the stations.</li></ul></li>
+<li>You were initially conceived in the Rail Development Plan 2000.</li>
+<li>Planning commenced in 2006 by MTR.</li>
+<li>You were planned to cost HKD 66.8bn (approx. GBP 6bn) with a start of operations in December 2015.</li>
+<li>You were split into approximately 20 civils contracts and 20 electrical and mechanical equipment contracts.</li>
+<li>In January 2010 construction started.</li>
+<li>In March 2014 MTR announced that you will be late by 2–3 years and that you are likely to be over budget (most recent estimate HKD 71.5bn, but that hasn't been announced yet).</li>
+<li>All past MTR projects were delivered on time and on budget. You have turned into a public scandal.</li>
+</ul>
+${img("route.jpg","XRL Hong Kong section: route and vertical profile")}
+${img("china.jpg","Major Mainland cities connected to the XRL")}
+${img("align.jpg","XRL alignment plan, Guangzhou to West Kowloon")}
+<div class="doc"><div class="dh"><span>Hong Kong Government press release</span><span>22 April 2008</span></div>
+<h4>Green light for local section of Express Rail Link</h4>
+<p>The Executive Council has agreed that the Mass Transit Railway Corporation Limited (MTRCL) be asked to proceed with further planning and design of the Hong Kong section of the Guangzhou–Shenzhen–Hong Kong Express Rail Link (XRL).</p>
+<p>The section will be a 26-kilometre underground rail line that runs from the terminus in West Kowloon to the boundary at Huanggang, where it will connect with the XRL Mainland section.</p>
+<p>A Government spokesman said today (April 22) that the XRL would reinforce Hong Kong's position as the transport hub in southern China and integrate Hong Kong into the country's rapidly growing express rail network.</p>
+<p>"The Hong Kong section will run on a dedicated track with a maximum train speed of 200 km per hour, shortening the travelling time between Hong Kong and Guangzhou to just under 50 minutes, twice as fast as the Guangzhou–Hong Kong through trains on the East Rail alignment," the spokesman said.</p>
+<p>The two termini of the XRL will be at West Kowloon in Hong Kong and Shibi in Guangzhou. Intermediate stations include Futian and Longhua in Shenzhen and Humen in Dongguan.</p>
+<p>Together with the adjoining Airport Express Kowloon Station and West Kowloon Station of the Kowloon Southern Link, the terminus of XRL would turn West Kowloon into a major rail hub.</p>
+<p>"The location also has a point-to-point connection with the heart of Central via the existing MTR network. Together with the new commercial development at the Kowloon station, it is set to become a prime business centre," the spokesman said.</p>
+<p>The Hong Kong terminus will partly extend into the underground area of the West Kowloon Cultural District (WKCD) to provide convenient access.</p>
+<p>"The integration into the WKCD will greatly enhance the prominence of the rail terminus as the gateway to Mainland China, and the WKCD as a regional cultural hub. It will generate more visits to the proposed art, culture and tourism facilities in the WKCD thereby promoting cultural tourism," the spokesman added.</p>
+<p>The Mainland terminus at Shibi, where the new Guangzhou Station is located, is one of the four biggest passenger transport centres in the country. In future, commuters will be able to switch to such express long-haul services as the proposed Beijing–Guangzhou Passenger Line at Shibi and the Hangzhou–Fuzhou–Shenzhen Passenger Line at Longhua.</p>
+<p>"Commuters from Hong Kong will be able to reach Shanghai in eight hours and Beijing in 10 in future, as compared with over 20 hours at present," the spokesman said.</p>
+<p>It is estimated that the XRL will carry about 100,000 passengers daily in 2020 and 120,000 passengers in 2030, generating an economic benefit of $83 billion over the next 50 years in terms of travelling time saved. The economic internal rate of return is about 9%.</p>
+<p>The project will create 5,000 jobs during construction and another 10,000 during its operation.</p>
+<p>After careful consideration of both the operational and financial implications, the Government has decided to adopt a concession approach to fund the estimated construction cost of $39.5 billion. Upon completion, the MTRCL will be granted a service concession for subsequent operation and pay the Government annually for the concession.</p>
+<p>Since the Government will fund the construction cost, the development rights for the site above the Hong Kong terminus will not be granted to the MTRCL.</p>
+<p>Works are expected to start in 2009 and be completed in 2014 or 2015.</p>
+<p class="eyebrow">Ends / Tuesday, April 22, 2008</p></div>` },
+
+{ id:"chair", tag:"Envelope 2", label:"The Chairman of the IBC", title:"Chairman of the Independent Board Committee",
+  sub:"The key client",
+  lock:{ q:"In 2008 the Government announced an estimated construction cost for the XRL. How much was it, in HKD billion?",
+    from:"The Victim", num:39.5, tol:0.05, hint:"It is buried in the 2008 Government press release, near the end, where it talks about the concession approach." },
+  body:`<ul>
+<li>You are the Chairman of the Independent Board Committee of MTR, which was set up to investigate why the Express Rail Link project (XRL) went over cost and is delayed.</li>
+<li>You investigated the causes of the problem and the handling of the announcement.</li>
+<li>Your first report found that the main causes were:<ul>
+<li>Unforeseen geology:<ul>
+<li>Marble zones in the border crossing tunnels delayed the arrival of two tunnel boring machines being driven from the Mainland side towards Hong Kong.</li>
+<li>Vertical strata of granite (hard rock) have delayed the station excavation, even though more geological investigations than normal standard were done on the site (600 bore holes in total, spaced 14m apart). Because the geology is not vertical, more hard rock was present than expected.</li></ul></li>
+<li>Utility diversion complications.</li>
+<li>Insufficient work fronts in the excavation works.</li>
+<li>Site access early on, due to political protests and sit-ins by villagers.</li>
+<li>Unforeseen events, i.e. tunnel flooding and the loss of one tunnel boring machine.</li>
+<li>Labour shortages: across all contracts approximately 20% of the positions are unfilled.</li>
+<li>Site coordination issues, with problems coordinating across contract interfaces.</li></ul></li>
+<li>You found that all processes and procedures were followed and that none of the causes indicate that the system of project management (the PIMS) isn't fit for purpose.</li>
+<li>You did not find any evidence that information was hidden. Information about the mounting delays was shared with Government in the 6-monthly meetings.</li>
+<li>You found that the Projects Director did not give a full picture of the cumulative effect of contract delays to the CEO and the Board, and you questioned whether the Board could have done more had they had all the relevant information. The Projects Director always reported status contract by contract but never summed it up to a full picture.</li>
+<li>You have now hired a team of experts to verify that these are the causes and root cause and, most importantly, to develop recommendations on what MTR Management should do to prevent them from happening again.</li>
+</ul>` },
+
+{ id:"gm", tag:"Envelope 3", label:"Suspect A", title:"General Manager of the XRL Project",
+  lock:{ q:"How far apart were the bore holes drilled at the station site, in metres?",
+    from:"The Chairman of the IBC", num:14, tol:0, hint:"Listen to the Chairman's point on unforeseen geology and the granite at the station." },
+  body:`<ul>
+<li>You are the General Manager of the XRL, i.e. you are the most senior project manager.</li>
+<li>You report to the Projects Director of MTR.</li>
+<li>You know that delayed site access to key areas for tunnelling access and at the sidings delayed the project by 6 months right from the start.</li>
+<li>You have been trying to play catch-up ever since.</li>
+<li>You have instructed 72 delay recovery measures to date (including procuring an additional tunnel boring machine for Contract 823A) and you are planning 57 additional measures, spending almost all of your contingency.</li>
+<li>You know that productivity is not where it should be and you have doubts that the delay recovery measures work.</li>
+<li>In December 2012 you reported 31% completion vs. planned 46%.</li>
+<li>In May 2013 you reported 40% completion vs. planned 62%.</li>
+<li>In December 2013 you reported 51% completion vs. planned 81%.</li>
+<li>You have raised the issue with the Projects Director and your team has been worried for a long time.</li>
+</ul>` },
+
+{ id:"c823a", tag:"Envelope 4", label:"Suspect B", title:"Manager of Contract 823A",
+  sub:"Tse Uk Tsuen to Tai Kong Po Tunnel",
+  lock:{ q:"By December 2013, how many percentage points behind plan was the project?",
+    from:"Suspect A", num:30, tol:0, hint:"Suspect A reported actual against planned completion three times. Take the latest pair and subtract." },
+  body:`<ul>
+<li>You report to the General Manager of the Express Rail Link (XRL) project.</li>
+<li>You are the manager of the contract that sits firmly on the critical path.</li>
+<li>The tunnel drive is relatively short (2.5km) compared to other contracts on the project.</li>
+<li>You have 4 tunnel boring machines (TBMs): 2 earth pressure balance and 2 sludge and slurry machines.</li>
+<li>Progress is behind schedule but you are hopeful that you can make it. You have been working hard with Hitachi, the manufacturer of your TBMs, to improve their reliability. Their frequent breakdowns are a big issue.</li>
+<li>On 30 March 2014 a "black" rainstorm hit. A category "black" typhoon is forecast to happen with a risk of 1 in 100 years, and it means that all work stops and the construction site evacuates.</li>
+<li>On the morning of 30 March construction began on a signalling box that sits on top of the tunnel. The plan was first to create access to the tunnel by cutting a hole in the tunnel ceiling and then to start construction of the superstructure. By the end of the day the ground floor walls were supposed to be erected.</li>
+<li>Unfortunately, the typhoon hit at midday and interrupted the construction.</li>
+<li>The typhoon moved a lot of debris, clogging up a culvert that diverts water around the construction site. The clogging held back so much water that it went over the protective dam built around the construction site.</li>
+<li>The clogging and breach of the dam happened close to the signalling box, and the water flowed through the hole in the tunnel ceiling into the tunnel.</li>
+<li>The tunnel was completely flooded and you lost one TBM.</li>
+<li>No persons were harmed in the incident.</li>
+<li>You have now lost all hope of recovering the delays.</li>
+</ul>` },
+
+{ id:"cpe", tag:"Envelope 5", label:"Suspect C", title:"Chief Programming Engineer",
+  lock:{ q:"Which company manufactured the tunnel boring machines on Contract 823A?",
+    from:"Suspect B", text:["hitachi"], hint:"Suspect B mentions the manufacturer while talking about breakdowns." },
+  body:`<ul>
+<li>You are the Chief Programming Engineer at MTR.</li>
+<li>You report to the Projects Director.</li>
+<li>Your team oversees the scheduling of all MTR projects.</li>
+<li>Your team has all the latest tools and regularly updates schedules and re-programmes projects to adjust for delays.</li>
+<li>Two of the five current projects are having delays.</li>
+<li>You are most worried about the Express Rail Link (XRL).</li>
+<li>The monthly earned-value progress reporting has shown a red flag for the XRL for 14 months in a row.</li>
+<li>The critical path is constantly changing on the XRL.</li>
+<li>You are trying to update the schedule but contractors are delaying their submission of plans because they do not want to commit to a completion date.</li>
+</ul>
+${img("spi.jpg","Figure 7. Schedule Performance Index (SPI) of the XRL, Nov 2011 – Jul 2014")}
+${img("gantt.jpg","Revised programme to completion, 2013–2017")}
+${img("scurve.jpg","Express Rail Link civil progress S-curve: original, revised and actual")}` },
+
+{ id:"pims", tag:"Envelope 6", label:"Suspect D", title:"Manager of the PIMS",
+  sub:"Project Information and Management System",
+  lock:{ q:"For how many months in a row has the progress reporting flagged the XRL red?",
+    from:"Suspect C", num:14, tol:0, hint:"Suspect C talks about the monthly earned-value progress reporting." },
+  body:`<ul>
+<li>You are the manager of the Project Information and Management System, called PIMS.</li>
+<li>You report to the Projects Director of MTR.</li>
+<li>You look after the PIMS, which is a handbook on how to manage projects, including governance and reporting.</li>
+<li>The system is world-standard and admired by other rail companies.</li>
+<li>The system is based on earned-value reporting.</li>
+<li>You have consultants who regularly update the system and bring it up to best practice.</li>
+<li>The last major refresh of the handbook was in 2009.</li>
+<li>Additional adjustments were made last year.</li>
+<li>You ensure that all numbers reported are factually correct and that PIMS is the single source of truth for all projects. You work closely with internal audit to ensure the correctness of data.</li>
+<li>You are very proud of your system, evidenced by the fact that all past projects came in on budget and on time.</li>
+</ul>` },
+
+{ id:"proc", tag:"Envelope 7", label:"Suspect E", title:"General Manager of Procurement & Contracts",
+  lock:{ q:"Which reporting method is the PIMS built on?",
+    from:"Suspect D", text:["earnedvalue","earnedvalues","evm","eva","evr","ev"], hint:"Suspect D describes what the system is based on. Suspect C used the same term." },
+  body:`<ul>
+<li>You are the head of the procurement and contracts department. You report to the Projects Director.</li>
+<li>You lead on all procurement efforts for MTR, covering operational, maintenance and project procurements.</li>
+<li>You are responsible for the cost control and estimation of projects.</li>
+<li>After a project has been contracted, you take the decisions made by the Project Team and the Projects Director to grant "extensions of time" and update project cost estimates accordingly.</li>
+<li>Projects have weekly meetings to evaluate filed extensions of time.</li>
+<li>You provide monthly cost reports to the CEO and the Board.</li>
+<li>You update project cost estimates on a 6-monthly cycle for each project.</li>
+<li>At the start of the Express Rail Link (XRL) the project had approximately 4% in risk contingency.</li>
+<li>All price reductions you achieved went into the unallocated risk budget (i.e. the contingency reserve), which is standard practice at MTR.</li>
+<li>Your hard work during negotiations increased the contingency reserve to approximately 15%.</li>
+<li>The more than 70 delay recovery measures, in particular the constant repairs of the tunnel boring machines, and major issues extracting old, bent pilings at the station site mean that almost all of the contingency has been spent.</li>
+<li>Your most recent estimate for the XRL is that the ongoing delays and the flooding will increase the budget to HKD 71.5bn.</li>
+<li>You ran Monte Carlo simulations to establish that the certainty of the estimate is a P90 (i.e. 90% certain).</li>
+</ul>` },
+
+{ id:"pd", tag:"Envelope 8", label:"Suspect F", title:"Projects Director",
+  lock:{ q:"What level of certainty did procurement claim for the HKD 71.5bn estimate?",
+    from:"Suspect E", num:90, tol:0, hint:"Listen to the very end of Suspect E's card: the Monte Carlo result." },
+  body:`<ul>
+<li>You are the Director of Projects at MTR. You report to the CEO.</li>
+<li>You are proud of your career in railways. You worked on Singapore MRT, the Jubilee Line Extension, the Singapore Land Transport Authority, and as divisional head of Bombardier Transport for the London Underground modernisation programme.</li>
+<li>Currently you run 5 major projects: the South Island Line, West Island Line, Kwun Tong Line Extension, Shatin to Central Link, and the Express Rail Link (XRL).</li>
+<li>You believe in a command-and-control way of working on projects.</li>
+<li>The XRL is your biggest headache.</li>
+<li>You drive the contractors to catch up the schedule. You disagreed with Government that the opening date of the XRL should be moved because you want to keep the pressure on the contractors.</li>
+<li>Recently, the contractor of the West Kowloon Terminus, the one station on the XRL, flagged that they are not able to meet the opening date. You instructed them to develop an alternative scenario that would fulfil the minimal opening requirement, i.e. a partial opening of the station.</li>
+<li>On 30 March 2014 a typhoon flooded one of the XRL tunnels and the project lost one TBM.</li>
+<li>On 31 March 2014 the contractor at the West Kowloon Terminus informed you in a formal briefing presentation that a partial opening of the station is no longer feasible.</li>
+<li>On 12 April 2014 you informed the CEO and the Board that you no longer think the opening date can be met.</li>
+</ul>` },
+
+{ id:"ceo", tag:"Envelope 9", label:"Suspect G", title:"CEO of MTR Corporation Ltd.",
+  lock:{ q:"How many days passed between the contractor's briefing that partial opening was not feasible and the Projects Director telling the CEO and the Board?",
+    from:"Suspect F", num:12, tol:0, hint:"Suspect F gives two dates near the end of the card: 31 March and a date in April. Count the days between them." },
+  body:`<ul>
+<li>You are a seasoned professional with a long history of working for metro operators, most recently as CEO of Manhattan Transport Authority and Managing Director for Finance and Planning at Transport for London.</li>
+<li>You lead a company that in 2013 made HKD 13.2bn profit from revenues of HKD 15.2bn from railway operations, HKD 8.4bn from station commercial business and property management, and HKD 13.2bn from international subsidiaries.</li>
+<li>You have pushed the international expansion of the company.</li>
+<li>Currently your company has 5 major projects: the South Island Line, West Island Line, Kwun Tong Line Extension, Shatin to Central Link, and the Express Rail Link (XRL).</li>
+<li>You get worrying news from the XRL project.</li>
+<li>In November 2013 you discussed the XRL project with the Projects Director. You both disagreed with Government (who suggested moving the opening date) because you want to keep pressure on the contractors to catch up the delays.</li>
+<li>On 12 April 2014 the Projects Director informs you that the opening date can no longer be met and that the date will have to move from 2015 to 2017.</li>
+<li>You discussed the issue for two days and on 14 April MTR informed the Government. The Government stated that this comes as a surprise to them and that they will have to make an announcement the next day.</li>
+<li>The same day (15 April) MTR issues a press briefing.</li>
+</ul>
+<div class="doc"><div class="dh"><span>MTR press release PR029/14</span><span>15 April 2014</span></div>
+<h4>Revised Programme for Hong Kong Section of Express Rail Link Project</h4>
+<p>A tunnel boring machine (TBM) severely damaged by floodwater is affecting progress on the Hong Kong Section of the Express Rail Link (XRL) project. This unforeseen challenge has added to the difficulties of the project and will push the completion date to 2016 with the line ready for operation in 2017.</p>
+<p>"The Express Rail Link project is a very large undertaking and immensely complex. Since construction began, we have been presented with numerous challenges which have put pressure on our schedule," said Mr T C Chew, Projects Director of MTR Corporation. "We have been very focused on catching up through fine-tuning designs and adjusting the construction works but this latest situation with the TBM makes it clear that completion of the project by 2015 is not achievable."</p>
+<p>During the black rainstorm on 30 March 2014, a section of tunnel in Yuen Long connecting Tsat Sing Kong and Tai Kong Po was flooded when heavy rain washed soil and debris into the work site, blocking the surface drains. As a result, flood water found their way into the partially bored tunnel where the TBM was located.</p>
+<p>After clearing the site, the MTR project team, the contractor and TBM manufacturer conducted detailed inspection of the TBM to assess the extent of the damage. Their findings have concluded that substantial repair work is required, particularly complete replacement of the sophisticated electronic components, before the TBM can become functional again. Further studies are being carried out to determine whether the TBM should be repaired or if an alternative method should be used to finish excavating the remaining tunnel section. The current assessment is a prolonged delay of up to nine months in the construction programme.</p>
+<p>There are two other critical locations where the challenges are of particular concern. One is the extremely difficult ground condition at the West Kowloon Terminus site. The underground rock strata sitting at a higher than expected level is requiring more time to excavate. But progress has also been hindered by boulders and uncharted utilities that had to be negotiated during the excavation process.</p>
+<p>The second critical challenge involves the complex geology at the cross-boundary section of the tunnels under the protected wetland area. As marble caverns are known to be located in the zone, tunnel boring work have to proceed with extreme care and any unforeseen circumstances will have to be dealt with as they surface.</p>
+<p>"As you can appreciate, the unforeseen challenges of this project are great. Difficult ground conditions, unforeseen obstructions and the black rainstorm have all impacted our programme. While we make every effort to complete the XRL project as early as possible, we will strictly uphold our 'safety first' principle in the management of our worksites and the safety of our workers," added Mr Chew.</p>
+<p>"Taking all this into account, we needed to set out a new timeline for the completion of the project, with major construction works to be finished within 2016. With the time required for testing and commissioning to ensure safe operations, the opening of the line for passenger service will be in 2017. We recognise the Government has entrusted the management of this project to us and we are sorry to have to bring forth this revised schedule. Nevertheless, this will now allow us to complete this project and deliver an important addition to Hong Kong's transportation network."</p>
+<p class="eyebrow">– End –</p></div>` }
+];
+
+/* ---------- Statistics for the analyst report ---------- */
+function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y}
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const Z80=0.8416;
+const costMu=Math.log(1+RCF.costMedianUplift), costSig=Math.log((1+RCF.costP80Uplift)/(1+RCF.costMedianUplift))/Z80;
+const costP=u=>Phi((Math.log(1+u)-costMu)/costSig);
+const schMu=Math.log(RCF.schedMedianYears), schSig=Math.log(RCF.schedP80Years/RCF.schedMedianYears)/Z80;
+const schP=y=>Phi((Math.log(y)-schMu)/schSig);
+const pLabel=p=>{const v=Math.round(p*100);return v<1?"below P1":v>99?"above P99":"P"+v};
+
+function cdfChart({xmin,xmax,fn,ticks,fmt,markers,xlabel}){
+  const W=340,H=190,L=34,R=12,T=14,B=38,iw=W-L-R,ih=H-T-B;
+  const X=v=>L+(v-xmin)/(xmax-xmin)*iw, Y=p=>T+(1-p)*ih;
+  let pts=[];for(let i=0;i<=120;i++){const v=xmin+(xmax-xmin)*i/120;pts.push([X(v),Y(fn(v))])}
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  let g="";[0,.2,.5,.8,1].forEach(p=>{g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${Y(p)}" y2="${Y(p)}"/><text x="${L-6}" y="${Y(p)+4}" text-anchor="end">P${Math.round(p*100)}</text>`});
+  ticks.forEach(v=>{g+=`<text x="${X(v)}" y="${H-B+16}" text-anchor="middle">${fmt(v)}</text>`});
+  let m="";markers.forEach((mk,i)=>{const x=X(mk.v),y=Y(fn(mk.v));const ly=T+12+i*14;
+    const anchor=x>W-110?"end":"start",dx=anchor==="end"?-5:5;
+    m+=`<line class="mk" x1="${x}" x2="${x}" y1="${T}" y2="${H-B}"/><circle class="mkdot" cx="${x}" cy="${y}" r="4"/><text class="mklab" x="${x+dx}" y="${ly}" text-anchor="${anchor}">${mk.t}</text>`});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative probability curve, ${xlabel}">${g}<path class="area" d="${line} L${X(xmax)} ${Y(0)} L${X(xmin)} ${Y(0)} Z"/><path class="curve" d="${line}"/>${m}<text x="${L+iw/2}" y="${H-6}" text-anchor="middle">${xlabel}</text></svg>`;
+}
+
+function analystBody(){
+  const pEst=costP(RCF.mtrEstimateUplift), pPlan=schP(RCF.planYears);
+  const r5=p=>"P"+Math.max(5,Math.round(p*20)*5);
+  const oneIn=p=>"about 1 in "+Math.max(2,Math.round(1/p));
+  const pct=v=>Math.round(v*100)+"%";
+  const p80Budget=Math.round(66.8*(1+RCF.costP80Uplift)/5)*5;
+  return `${SHOW_DRAFT_BADGE?'<span class="draft">Draft figures</span>':""}
+<p>Your analyst has benchmarked the XRL against a reference class of more than 100 comparable projects: high-speed rail lines, rail tunnels and urban heavy rail. The question was simple. Were the budget and the schedule realistic on the day they were set?</p>
+<div class="finding"><h4>Cost: the estimate was reasonable, the contingency was not</h4>
+<p>The XRL's overrun so far is small by the standards of its reference class. Projects like this overrun their budgets about three times out of four, and the typical overrun is far larger than anything the XRL has announced. The problem is the risk allowance. A 4% contingency left almost no room for what normally happens to projects like this one.</p>
+<dl class="kv">
+<dt>Comparable projects over budget</dt><dd>3 in 4</dd>
+<dt>Median overrun (P50)</dt><dd>+${pct(RCF.costMedianUplift)}</dd>
+<dt>Overrun at P80</dt><dd>+${pct(RCF.costP80Uplift)}</dd>
+<dt>XRL contingency at start</dt><dd>${pct(RCF.startContingency)}</dd>
+<dt>XRL contingency after negotiations</dt><dd>${pct(RCF.peakContingency)}</dd>
+<dt>Chance of meeting budget at outset</dt><dd>about 1 in 10</dd>
+<dt>P80 budget on HKD 66.8bn</dt><dd>~HKD ${p80Budget}bn</dd></dl>
+${cdfChart({xmin:-0.2,xmax:1.2,fn:costP,ticks:[0,.3,.6,.9,1.2],fmt:v=>(v>0?"+":"")+Math.round(v*100)+"%",xlabel:"cost overrun on approved budget",
+  markers:[{v:RCF.mtrEstimateUplift,t:"HKD 71.5bn"},{v:RCF.costMedianUplift,t:"P50"},{v:RCF.costP80Uplift,t:"P80"}]})}
+<p>Even with procurement savings added to the reserve, the chance of staying within budget was only about 1 in 5. Procurement calls the new HKD 71.5bn estimate a P90. Against the outside view it sits nearer ${r5(pEst)}.</p></div>
+<div class="finding"><h4>Schedule: the plan was never achievable</h4>
+<p>The XRL inherited an extremely aggressive schedule: only 3 years of construction and only ${RCF.planYears} years in total between the start of the project and the planned opening. On average, similar international projects have a construction duration of 6 years.</p>
+<dl class="kv">
+<dt>Comparable projects finished late</dt><dd>7 in 10</dd>
+<dt>XRL planned duration</dt><dd>${RCF.planYears} years</dd>
+<dt>Reference class median (P50)</dt><dd>${RCF.schedMedianYears} years</dd>
+<dt>Reference class P80</dt><dd>${RCF.schedP80Years} years</dd>
+<dt>Chance of meeting the plan</dt><dd>${oneIn(pPlan)}</dd></dl>
+${cdfChart({xmin:3,xmax:18,fn:schP,ticks:[3,6,9,12,15,18],fmt:v=>v+"y",xlabel:"duration to opening, years",
+  markers:[{v:RCF.planYears,t:"XRL plan"},{v:RCF.schedMedianYears,t:"P50"},{v:RCF.schedP80Years,t:"P80"}]})}
+<p>Set at P80, the budget needed far more contingency and the schedule several more years from day one. The cost overrun so far sits within the normal range for projects like this. The schedule never did.</p></div>`;
+}
+
+/* ---------- Dealing ---------- */
+const seatOf=(pos,n)=>(pos%n)+1;              // pos is 0-based in unlock order
+const myCards=(n,seat)=>CARDS.filter((c,i)=>seatOf(i,n)===seat);
+
+/* ---------- State ---------- */
+const KEY="xrl-trial-v1";
+let S={n:null,seat:null,opened:{},misses:{},analyst:false,fresh:null};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)S=Object.assign(S,s,{fresh:null})}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const norm=s=>s.toLowerCase().replace(/,/g,".").replace(/[^a-z0-9.]/g,"");
+function check(card,raw){
+  const v=norm(raw);if(!v)return false;
+  if(v===norm(MASTER_CODE))return true;
+  const L=card.lock;
+  if(L.text)return L.text.some(t=>v===t||v.includes(t)&&t.length>3);
+  const m=raw.replace(/,/g,".").match(/-?\d+(\.\d+)?/);if(!m)return false;
+  return Math.abs(parseFloat(m[0])-L.num)<=L.tol;
+}
+
+/* ---------- Views ---------- */
+const app=document.getElementById("app");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(){ (S.n&&S.seat)?renderMain():renderSetup(); }
+
+function renderSetup(){
+  const n=S._n||null, seat=S._seat||null;
+  app.innerHTML=`<header class="mast"><span class="eyebrow">Hong Kong · Summer 2014</span>
+<h1>Trial by <span>Tribulation</span></h1>
+<p>The case of Hong Kong's Express Rail Link</p></header>
+<div class="panel">
+<div class="field"><label id="lbl-n">How many players are at your table?</label>
+<div class="chips" role="group" aria-labelledby="lbl-n">${[3,4,5,6,7,8,9].map(k=>`<button class="chip" data-n="${k}" aria-pressed="${n===k}">${k}</button>`).join("")}</div></div>
+<div class="field"><label id="lbl-s">Count off around the table. What is your number?</label>
+<div class="chips" role="group" aria-labelledby="lbl-s">${n?Array.from({length:n},(_,i)=>i+1).map(k=>`<button class="chip" data-s="${k}" aria-pressed="${seat===k}">${k}</button>`).join(""):'<p class="note">Choose the table size first.</p>'}</div></div>
+<button class="btn" id="go" ${n&&seat?"":"disabled"}>Show my envelopes</button>
+<p class="note">Everyone at your table must choose the same table size. Your envelopes depend on it.</p>
+</div>`;
+  app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{S._n=+b.dataset.n;if(S._seat>S._n)S._seat=null;renderSetup()});
+  app.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{S._seat=+b.dataset.s;renderSetup()});
+  app.querySelector("#go").onclick=()=>{S.n=S._n;S.seat=S._seat;S.opened={};S.misses={};S.analyst=false;save();render();window.scrollTo(0,0)};
+}
+
+function envelopeHTML(c){
+  const m=S.misses[c.id]||0;
+  return `<article class="env" id="env-${c.id}">
+<div class="flapwrap"><div class="flap"></div><div class="flapline"></div><span class="label">${c.tag}</span><span class="stamp">Sealed</span></div>
+<div class="body"><h3>${c.label}</h3>
+<p class="lockfrom">Opens after ${c.lock.from} has been read aloud</p>
+<p class="lockq">${c.lock.q}</p>
+<form class="ans" data-id="${c.id}"><input id="in-${c.id}" autocomplete="off" aria-label="Your answer" placeholder="Your answer"><button class="btn" type="submit">Open</button></form>
+<p class="msg" aria-live="polite" id="msg-${c.id}"></p>
+${m>=2?`<p class="hint">${c.lock.hint}</p>`:""}</div></article>`;
+}
+function cardHTML(c){
+  const fresh=S.fresh===c.id?" fresh":"";
+  return `<article class="card${fresh}" id="card-${c.id}"><div class="head"><span class="eyebrow">${c.tag} · ${c.label}</span><h3>${c.title}</h3>${c.sub?`<span class="eyebrow">${c.sub}</span>`:""}<span class="read">Read this card aloud to your table</span></div><div class="content">${c.body}</div></article>`;
+}
+function analystHTML(){
+  if(S.analyst){
+    const fresh=S.fresh==="analyst"?" fresh":"";
+    return `<article class="card analyst${fresh}" id="card-analyst"><div class="head"><span class="eyebrow">Envelope 10 · Evidence drop</span><h3>The analyst's report</h3><span class="read">Share this with your whole table</span></div><div class="content">${analystBody()}</div></article>`;
+  }
+  return `<article class="env analyst" id="env-analyst"><div class="flapwrap"><div class="flap"></div><div class="flapline"></div><span class="label">Envelope 10</span><span class="stamp">Pending</span></div>
+<div class="body"><h3>The analyst's report</h3>
+<p class="lockq">Your team's analyst is still working. Your facilitator will announce a release code when the report is ready.</p>
+<form class="ans" data-id="analyst"><input id="in-analyst" autocomplete="off" aria-label="Release code" placeholder="Release code"><button class="btn" type="submit">Open</button></form>
+<p class="msg" aria-live="polite" id="msg-analyst"></p></div></article>`;
+}
+
+function renderMain(){
+  const mine=myCards(S.n,S.seat);
+  const orderRows=CARDS.map((c,i)=>{const s=seatOf(i,S.n),me=s===S.seat;
+    return `<li class="${me?"mine":""}"><span class="n">${String(i+1).padStart(2,"0")}</span><span class="t">${c.label}</span><span class="who">${me?"You":"Player "+s}</span></li>`}).join("")
+    +`<li class="analyst"><span class="n">10</span><span class="t">Analyst's report</span><span class="who">Everyone</span></li>`;
+  app.innerHTML=`<div class="seatbar"><strong>Player ${S.seat} of ${S.n}</strong><button id="reset">Change table or player</button></div>
+<header class="mast"><span class="eyebrow">Hong Kong · Summer 2014</span><h1>Trial by <span>Tribulation</span></h1></header>
+<details class="brief" ${Object.keys(S.opened).length?"":"open"}><summary>The scenario</summary><div class="in">
+<p>It is the summer of 2014. You, as a group, have been asked to investigate the problems of the Express Rail Link (XRL) project.</p>
+<p>The official report by the Chairman of the Independent Board Committee (IBC) of the MTR Corporation detailed his findings into the causes of the delay and cost overrun.</p>
+<p>The Chairman asks you for an independent view on (1) <strong>causes and root causes</strong> of the delays, basically verifying his first report; (2) <strong>recommendations</strong> on how MTR can turn the project around and prevent overruns like this in future; and (3) who should be held <strong>personally responsible</strong>.</p>
+<p>You have 60 minutes to report back to the Chairman.</p>
+<ol class="steps">
+<li>Each envelope belongs to one player. Only that player can see it. Some of you hold two.</li>
+<li>The holder of the Victim starts by reading it out loud. Add some colour and drama if you like.</li>
+<li>Every other envelope is sealed. To open it, its holder must answer a question about the card read just before. Listen closely, and ask the reader to repeat if you need to.</li>
+<li>Read each envelope aloud as soon as it opens, in the order below.</li>
+<li>Partway through, your analyst will deliver an evidence drop.</li>
+<li>As a group, prepare one slide answering the Chairman's questions, and decide which suspect is to blame.</li>
+</ol></div></details>
+<section class="sec"><h2>Your envelopes</h2>${mine.map(c=>(!c.lock||S.opened[c.id])?cardHTML(c):envelopeHTML(c)).join("")}</section>
+<section class="sec"><h2>Evidence drop</h2>${analystHTML()}</section>
+<section class="sec"><h2>Reading order</h2><ol class="order">${orderRows}</ol></section>`;
+
+  app.querySelector("#reset").onclick=()=>{S._n=S.n;S._seat=S.seat;S.n=null;S.seat=null;save();render();window.scrollTo(0,0)};
+  app.querySelectorAll("form.ans").forEach(f=>f.onsubmit=e=>{e.preventDefault();submit(f.dataset.id)});
+  if(S.fresh){const el=document.getElementById((S.fresh==="analyst"?"card-analyst":"card-"+S.fresh));if(el)el.scrollIntoView({behavior:"smooth",block:"start"});S.fresh=null}
+}
+
+function submit(id){
+  const input=document.getElementById("in-"+id), msg=document.getElementById("msg-"+id), env=document.getElementById("env-"+id);
+  const val=input.value;
+  let ok;
+  if(id==="analyst") ok=norm(val)===norm(ANALYST_CODE)||norm(val)===norm(MASTER_CODE);
+  else ok=check(CARDS.find(c=>c.id===id),val);
+  if(ok){
+    env.classList.add("opening");
+    msg.textContent="";
+    const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTimeout(()=>{ if(id==="analyst")S.analyst=true; else S.opened[id]=true; S.fresh=id; save(); renderMain(); }, reduce?0:750);
+  }else{
+    if(id!=="analyst"){S.misses[id]=(S.misses[id]||0)+1;save();}
+    env.classList.remove("shake");void env.offsetWidth;env.classList.add("shake");
+    const m=S.misses[id]||0;
+    msg.className="msg bad";
+    msg.textContent=id==="analyst"?"That is not the release code. Wait for your facilitator.":(m>=2?"Not quite. A hint has appeared below.":"Not quite. Ask the reader to repeat the relevant part.");
+    if(id!=="analyst"&&m===2){const v=val;renderMain();const i2=document.getElementById("in-"+id);i2.value=v;document.getElementById("msg-"+id).className="msg bad";document.getElementById("msg-"+id).textContent="Not quite. A hint has appeared below.";i2.focus()}
+  }
+}
+
+render();
+</script>
+</body>
+</html>
