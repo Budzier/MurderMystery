@@ -1,0 +1,796 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Federated Data Platform Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: a case-pack dossier. Masthead, two drawers (In class / Further reading), exhibits lettered in sequence.
+   Same type system as the course handouts; three legitimacy hues are semantic, not decorative. */
+:root{
+  --paper:#e7eaee; --card:#fbfbfa; --ink:#18212c; --muted:#56616f; --line:#cdd3da; --wash:#f1f3f5;
+  --accent:#1d6886; --accent-soft:#dcebf1;
+  --benefit:#8a5d0b; --benefit-soft:#f5ead2;
+  --fair:#8e2f52;    --fair-soft:#f4dfe6;
+  --sense:#2c6b4f;   --sense-soft:#dcefe4;
+  --none:#56616f;    --none-soft:#e6e9ed;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2d3743; --wash:#141a22;
+  --accent:#62b6d4; --accent-soft:#15303b;
+  --benefit:#e0b155; --benefit-soft:#3a2d12;
+  --fair:#e48aa9;    --fair-soft:#3d1a28;
+  --sense:#7fcca6;   --sense-soft:#16322a;
+  --none:#a9b3c0;    --none-soft:#232c37;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2d3743; --wash:#141a22;
+  --accent:#62b6d4; --accent-soft:#15303b;
+  --benefit:#e0b155; --benefit-soft:#3a2d12;
+  --fair:#e48aa9;    --fair-soft:#3d1a28;
+  --sense:#7fcca6;   --sense-soft:#16322a;
+  --none:#a9b3c0;    --none-soft:#232c37;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:20px 72px}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono)}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+
+/* Masthead */
+.masthead{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.docket{display:flex;flex-wrap:wrap;gap:4px 20px;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--wash)}
+.mast-body{padding:28px 20px 24px;display:grid;gap:14px}
+h1{font-size:clamp(32px,7.4vw,64px);font-weight:800;font-stretch:72%;text-transform:uppercase;letter-spacing:-.01em;max-width:16ch}
+.sub{font-family:var(--f-display);font-stretch:95%;font-weight:600;font-size:clamp(18px,3vw,23px);color:var(--accent)}
+.byline{font-family:var(--f-mono);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 18px}
+.byline strong{color:var(--ink);font-weight:600}
+.epigraph{border-top:1px solid var(--line);padding-top:14px;font-style:italic;color:var(--muted);max-width:62ch}
+.epigraph b{font-style:normal;font-family:var(--f-mono);font-size:12.5px;font-weight:400}
+
+/* Drawer tabs */
+.drawers{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:12px 10px;display:grid;gap:8px}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;max-width:260px;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:6px 12px;cursor:pointer;display:grid;gap:1px}
+.tab span{font-family:var(--f-display);font-weight:750;font-stretch:85%;font-size:17px}
+.tab small{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.tab[aria-selected="true"] small{color:var(--line)}
+.jump{display:flex;gap:4px 14px;flex-wrap:wrap;font-family:var(--f-mono);font-size:12.5px}
+.jump a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.jump a:hover{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* Sections */
+.panel{display:grid;gap:22px}
+section{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:24px 20px 28px;display:grid;gap:16px;scroll-margin-top:110px}
+.sec-head{display:grid;gap:6px}
+h2{font-size:clamp(24px,4vw,32px);font-weight:780;font-stretch:80%}
+h3{font-size:20px;font-weight:720;font-stretch:88%}
+.lede{max-width:66ch;color:var(--ink)}
+.prose{max-width:66ch;display:grid;gap:14px}
+.prose h3{margin-top:14px}
+.prose .verdict{font-family:var(--f-display);font-stretch:90%;font-weight:650;font-size:20px;line-height:1.3}
+.fig{font-variant-numeric:tabular-nums;background:var(--accent-soft);padding:0 3px;border-radius:2px}
+.cite{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.note{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:12px;max-width:72ch}
+
+/* Brief */
+.brief{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1;width:34px;height:34px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%}
+.steps b{font-family:var(--f-display);font-weight:700;font-stretch:90%}
+.steps .t{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-left:6px}
+.stamp{border:1px dashed var(--line);border-radius:6px;padding:14px 16px;background:var(--wash);display:grid;gap:8px;align-content:start}
+
+/* Lens */
+.lens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lens-col{border-radius:6px;padding:14px 14px 16px;display:grid;gap:10px;align-content:start;border:1px solid var(--line);border-top:5px solid var(--c);background:var(--card)}
+.lens-col .q{font-family:var(--f-display);font-weight:780;font-stretch:85%;font-size:21px;line-height:1.15;color:var(--c)}
+.lens-col dl{margin:0;display:grid;gap:6px}
+.lens-col dt{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.lens-col dd{margin:0 0 4px;font-size:15px;color:var(--muted)}
+.lens-col .resp{border-top:1px solid var(--line);padding-top:10px;font-size:15px}
+.lens-col .resp b{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:block;color:var(--muted)}
+.c-B{--c:var(--benefit);--cs:var(--benefit-soft)}
+.c-F{--c:var(--fair);--cs:var(--fair-soft)}
+.c-S{--c:var(--sense);--cs:var(--sense-soft)}
+.c-X{--c:var(--none);--cs:var(--none-soft)}
+
+/* Sort tool */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;border-block:1px solid var(--line);padding-block:10px}
+.seg{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.seg .lbl{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:4px}
+.seg button{border:1px solid var(--line);background:var(--card);border-radius:4px;padding:4px 10px;font-family:var(--f-mono);font-size:12.5px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.act{border:1px solid var(--ink);background:var(--card);border-radius:4px;padding:6px 12px;font-family:var(--f-display);font-weight:650;font-stretch:90%;font-size:15px;cursor:pointer}
+.act.primary{background:var(--ink);color:var(--card)}
+.act.ghost{border-color:var(--line);color:var(--muted)}
+.tally{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.tally i{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--c);margin-right:5px;vertical-align:-1px}
+.tally b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+.vc{border:1px solid var(--line);border-radius:6px;background:var(--card);padding:14px 14px 12px;display:grid;gap:10px;min-width:0;position:relative}
+.vc .meta{display:flex;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.vc .deck{border:1px solid var(--line);border-radius:3px;padding:0 5px}
+.vc blockquote{margin:0;font-size:16.5px;line-height:1.5}
+.vc blockquote::before{content:"\201C";font-family:var(--f-display);font-weight:800;font-size:30px;line-height:0;vertical-align:-11px;margin-right:2px;color:var(--muted)}
+.vc .who{font-size:14px;color:var(--muted);line-height:1.4}
+.vc .who b{color:var(--ink);font-weight:600}
+.picks{display:flex;flex-wrap:wrap;gap:5px}
+.pick{border:1px solid var(--line);background:transparent;border-radius:999px;padding:3px 10px;font-family:var(--f-mono);font-size:12px;cursor:pointer;color:var(--muted)}
+.pick:hover{border-color:var(--c);color:var(--c)}
+.pick[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--card)}
+.vc.sorted{border-color:var(--ink)}
+.chip{font-family:var(--f-mono);font-size:11.5px;padding:1px 8px;border-radius:3px;background:var(--cs);color:var(--c);font-weight:600}
+.subhead{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;justify-content:space-between}
+
+/* Note to minister */
+textarea{width:100%;min-height:76px;resize:vertical;border:1px solid var(--line);border-radius:4px;background:var(--wash);color:var(--ink);font-family:var(--f-body);font-size:15.5px;line-height:1.45;padding:8px 10px}
+
+/* Further reading */
+.lib-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.filters{display:flex;flex-wrap:wrap;gap:5px}
+.filters button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 11px;font-family:var(--f-mono);font-size:12px;cursor:pointer;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.tl{list-style:none;margin:0;padding:0;display:grid;border-left:2px solid var(--line);margin-left:6px}
+.tl li{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;padding:8px 0 8px 16px;position:relative}
+.tl li::before{content:"";position:absolute;left:-6px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--card);border:2px solid var(--muted)}
+.tl li.future::before{border-style:dashed;border-color:var(--accent)}
+.tl li.key::before{background:var(--ink);border-color:var(--ink)}
+.tl .d{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.tl .e{font-size:16px;line-height:1.45}
+.tl .k{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-left:6px;white-space:nowrap}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--wash)}
+td.claim{font-family:var(--f-display);font-weight:700;font-stretch:88%;font-size:17px;line-height:1.25;width:24%}
+td .cite{display:block;margin-top:4px}
+tr:last-child td{border-bottom:0}
+
+.figs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+figure{margin:0;border:1px solid var(--line);border-radius:6px;padding:14px 14px 12px;display:grid;gap:10px;min-width:0}
+figcaption{display:grid;gap:3px}
+figcaption b{font-family:var(--f-display);font-weight:720;font-stretch:88%;font-size:18px;line-height:1.2}
+svg text{font-family:var(--f-mono)}
+.dots{display:grid;grid-template-columns:repeat(auto-fill,minmax(11px,1fr));gap:3px}
+.dots i{aspect-ratio:1;border-radius:2px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+.ext{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.ext article{border:1px solid var(--line);border-radius:6px;padding:14px 16px 16px;display:grid;gap:8px;align-content:start;min-width:0}
+.ext h3{font-size:19px}
+.ext p{font-size:15.5px;line-height:1.5}
+.ext .sharp{display:flex;flex-wrap:wrap;gap:5px;align-items:center;border-top:1px solid var(--line);padding-top:8px}
+.ext .sharp .rl{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+
+.src{list-style:none;margin:0;padding:0;display:grid;gap:7px;columns:2;column-gap:28px;display:block}
+.src li{break-inside:avoid;font-size:14.5px;line-height:1.4;margin-bottom:9px}
+.src .cite{display:block}
+
+/* v2: group tasks */
+.vc .row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between}
+.flag{border:1px dashed var(--line);background:transparent;border-radius:4px;padding:2px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);cursor:pointer}
+.flag[aria-pressed="true"]{border-style:solid;border-color:var(--ink);background:var(--ink);color:var(--card)}
+.vc.flagged{box-shadow:inset 4px 0 0 var(--ink)}
+.vc .code{font-weight:600;color:var(--ink)}
+.axis{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center}
+.axis .ax{font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.vc.ping{outline:3px solid var(--accent);outline-offset:2px}
+.flabel{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.moments{display:grid;gap:16px}
+.moment{border:1px solid var(--line);border-radius:6px;padding:18px 18px 16px;display:grid;gap:12px;min-width:0}
+.mo-head{display:grid;gap:2px}
+.mo-sit{max-width:70ch}
+.mo-voice{margin:0;border-left:3px solid var(--ink);padding:4px 0 4px 14px;font-size:17px;font-style:italic;max-width:70ch;display:grid;gap:4px}
+.mo-voice cite{font-style:normal;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.mo-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:10px 12px;cursor:pointer;font-size:15.5px;line-height:1.4}
+.opt .ol{font-family:var(--f-display);font-weight:800;font-size:18px;line-height:1.1}
+.opt[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--wash)}
+.opt.did{border-style:dashed;border-color:var(--accent)}
+.otag{grid-column:2;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.didtag,.mine{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.mine{color:var(--ink)}
+.onote{grid-column:2;font-size:14px;color:var(--muted)}
+.opt .ot{min-width:0}
+.mo-sit{display:grid;gap:10px}
+.mo-ask{font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.act[disabled]{opacity:.45;cursor:not-allowed}
+.reveal{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:14px}
+.rv-block{display:grid;gap:6px;max-width:74ch}
+.rv-block .chips{display:flex;flex-wrap:wrap;gap:5px}
+.rv-block ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.rv-reading{font-size:17.5px;line-height:1.55;border-left:3px solid var(--accent);padding-left:14px}
+.moment .row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+@media (max-width:640px){.mo-opts{grid-template-columns:minmax(0,1fr)}}
+.sumtable{min-width:720px}
+.sumtable td{font-size:15px;line-height:1.45}
+.sumtable td:first-child{border-left:4px solid var(--c);width:24%}
+.sumtable .hq{font-family:var(--f-display);font-weight:760;font-stretch:85%;font-size:18px;line-height:1.2;color:var(--c);margin-bottom:6px}
+.sumtable .ex{font-style:italic;color:var(--muted);font-size:14.5px}
+.sumtable ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.sumtable td p+p{margin-top:8px}
+.sumtable .avoid{color:var(--muted);font-size:14.5px}
+.sumtable .avoid b{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--fair);margin-right:4px}
+.ext .ask{border-top:1px solid var(--line);padding-top:8px;font-style:italic;font-size:15.5px}
+.ext .ask .rl{display:block;font-style:normal;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+.foot{font-family:var(--f-mono);font-size:12px;color:var(--muted);max-width:80ch;padding-inline:4px}
+
+@media (max-width:820px){
+  .brief,.figs{grid-template-columns:minmax(0,1fr)}
+  .lens{grid-template-columns:minmax(0,1fr)}
+  .src{columns:1}
+}
+@media (max-width:520px){
+  section{padding:20px 14px 22px}
+  .tl li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .ext{grid-template-columns:minmax(0,1fr)}
+  .tab small{display:none}
+  .jump{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding-bottom:4px}
+}
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth}
+  .pick,.seg button,.tab{transition:background-color .15s,color .15s,border-color .15s}
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="docket">
+    <span class="eyebrow">Case dossier · FDP/2026</span>
+    <span class="eyebrow">Position at 7 October 2026</span>
+  </div>
+  <div class="mast-body">
+    <h1>Not all problems are communications problems</h1>
+    <p class="sub">The NHS Federated Data Platform and the objections nobody sorted, 2020–2026</p>
+    <div class="byline"><strong>Alexander Budzier</strong><span>Saïd Business School, University of Oxford</span><span>October 2026</span></div>
+    <p class="epigraph">'Two years on, arguably it may be concluded that the provision of information, while important to do, has not been sufficient to meet public concern. Not all problems are communications problems.' <b>Office of the National Data Guardian, September 2026</b></p>
+  </div>
+</header>
+
+<nav class="drawers" aria-label="Dossier sections">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-class" aria-controls="panel-class" aria-selected="true"><span>In class</span><small>Brief, two group tasks and a summary · 25 min</small></button>
+    <button class="tab" role="tab" id="tab-library" aria-controls="panel-library" aria-selected="false"><span>Further reading</span><small>The full story, data and wider context</small></button>
+  </div>
+  <div class="jump" id="jump-class">
+    <a href="#seat">Your seat</a><a href="#lens">Three questions</a><a href="#voices">1 · Listen</a><a href="#moments">2 · What would you do?</a><a href="#summary">Summary</a>
+  </div>
+  <div class="jump" id="jump-library" hidden>
+    <a href="#story">The story</a><a href="#timeline">Timeline</a><a href="#numbers">The numbers</a><a href="#beyond">Beyond the NHS</a><a href="#company">The company</a><a href="#sources">Sources</a>
+  </div>
+</nav>
+
+<!-- ============ IN CLASS ============ -->
+<div class="panel" id="panel-class" role="tabpanel" aria-labelledby="tab-class">
+
+<section id="seat">
+  <div class="sec-head"><span class="eyebrow">Your seat</span><h2>Your group now runs the FDP</h2></div>
+  <div class="brief">
+    <div class="prose">
+      <p>It is Wednesday 7 October 2026. On Monday a new senior responsible owner (SRO) took charge of the NHS Federated Data Platform (FDP), the £330mn system Palantir built to join up hospital data in England. Your group is the SRO's team.</p>
+      <p>The previous SRO left a file. It describes one problem: resistance. Analysts refuse to log in. Campaigners file freedom of information requests. MPs want the contract ended. The file recommends a stronger adoption drive and better communications.</p>
+      <p>The health secretary wants something from your team by Friday. In March 2027 the government can break Palantir's contract. Downing Street is looking for a British alternative. Before ministers decide, he wants to know what people are actually objecting to, and what would change their minds.</p>
+      <p class="verdict">The file may be right. Your group's job is to find out.</p>
+    </div>
+    <div class="stamp">
+      <span class="eyebrow">Your group's task · 25 minutes</span>
+      <ol class="steps">
+        <li><div><b>Listen</b><span class="t">10 min</span><br>Sort the twelve voices. Agree which question each person is asking, and flag the cards you cannot agree on.</div></li>
+        <li><div><b>What would you do?</b><span class="t">15 min</span><br>Work through five real moments. For each, choose a response as a group, then open the reveal to see what NHS England did and how it played out.</div></li>
+      </ol>
+      <p class="cite">Work from one screen per group. Your group's work stays on this screen only. The new SRO and the minister's request are teaching devices; everything else is drawn from Financial Times reporting, March–October 2026.</p>
+    </div>
+  </div>
+</section>
+
+<section id="lens">
+  <div class="sec-head"><span class="eyebrow">The listening device</span><h2>Three questions behind an objection</h2>
+  <p class="lede">An objection is a claim that a change lacks legitimacy. These three questions are a way to hear which claim someone is making. One person can ask more than one.</p></div>
+  <div class="lens">
+    <div class="lens-col c-B"><span class="eyebrow">Pragmatic · Benefit</span><p class="q">'It doesn't benefit me'</p>
+      <dl><dt>Exchange</dt><dd>No value in it for me or my team</dd><dt>Influence</dt><dd>No real say in how it works</dd><dt>Disposition</dt><dd>Distrust of the sponsor's intentions</dd></dl>
+      <p class="resp"><b>Typical responses</b>Change incentives, workload, benefits or design</p></div>
+    <div class="lens-col c-F"><span class="eyebrow">Moral · Fairness</span><p class="q">'It isn't fair'</p>
+      <dl><dt>Consequence</dt><dd>The outcome is wrong</dd><dt>Procedure</dt><dd>The process was improper</dd><dt>Structure</dt><dd>The wrong body is making the call</dd><dt>Personal</dt><dd>Distrust of this leader or firm specifically</dd></dl>
+      <p class="resp"><b>Typical responses</b>Engage, give voice, change process or governance</p></div>
+    <div class="lens-col c-S"><span class="eyebrow">Cognitive · Sense</span><p class="q">'It doesn't make sense'</p>
+      <dl><dt>Comprehensibility</dt><dd>It cannot be explained simply</dd><dt>Taken-for-granted</dt><dd>It still needs justifying</dd></dl>
+      <p class="resp"><b>Typical responses</b>Explain, demonstrate, make it intelligible</p></div>
+  </div>
+  <p class="cite">Adapted from Suchman, M. C. (1995) 'Managing legitimacy: strategic and institutional approaches', Academy of Management Review 20(3).</p>
+</section>
+
+<section id="voices">
+  <div class="sec-head"><span class="eyebrow">Task 1 · Listen</span><h2>The voices</h2>
+  <p class="lede">Twelve objections to the FDP, in the words reported by the FT. As a group, agree which question each person is asking: <b>Benefit</b> ('it doesn't benefit me'), <b>Fairness</b> ('it isn't fair') or <b>Sense</b> ('it doesn't make sense'). Tap more than one if you hear more than one. Flag a card when your group cannot agree, and bring it to the plenary.</p></div>
+  <div class="toolbar">
+    <div class="tally" id="tally-voices"></div>
+    <div class="seg"><button class="act ghost" id="reset-voices">Clear our sort</button></div>
+  </div>
+  <div class="cards" id="cards-voices"></div>
+</section>
+
+<section id="moments">
+  <div class="sec-head"><span class="eyebrow">Task 2 · What would you do?</span><h2>Five moments, five choices</h2>
+  <p class="lede">Each moment is a real point between 2023 and 2026 where NHS England faced an objection. Read it, discuss it as a group and choose one of the four responses. Then open the reveal: it shows which question was being asked, what kind of response each option is, what NHS England chose and what happened next.</p></div>
+  <div class="moments" id="moments-list"></div>
+</section>
+
+<section id="summary">
+  <div class="sec-head"><span class="eyebrow">Summary</span><h2>Listening to objections</h2>
+  <p class="lede">Before you respond to an objection, work out which question it is asking.</p></div>
+  <div class="tbl-wrap">
+    <table class="sumtable">
+      <thead><tr><th>When you hear…</th><th>Questions to ask</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr class="c-B"><td><p class="hq">'It doesn't benefit me'</p><p class="ex">'It doesn't do anything new for us.' 'We already have better tools.' 'Show me it gets there faster.'</p></td>
+          <td><ul><li>What will this cost you in time or work?</li><li>What do you have today that works?</li><li>What would you need to see before you switch?</li><li>Did you have any say in this?</li></ul></td>
+          <td><p>Change something real: the deal, the workload, the design, or who decides. Show a local benefit, in their terms, from people doing the same job. Let them keep what already works.</p><p class="avoid"><b>Avoid</b> answering with national figures, such as 110,000 extra operations. Avoid a training drive that implicitly says 'you are not seeing any benefits because you are using it wrong'.</p></td></tr>
+        <tr class="c-F"><td><p class="hq">'It isn't fair'</p><p class="ex">'I refuse to work on this.' 'It was stitched up.' 'Who can see our patients' data?'</p></td>
+          <td><ul><li>What exactly is wrong: the outcome, the way it was decided, who decided, or who we are working with?</li><li>What would a fair process look like to you?</li><li>What did we promise, and have we kept it?</li></ul></td>
+          <td><p>Give people a real say, and change the process or the governance where it is wrong. Tell people before others find out. Keep your promises, or reopen them in public.</p><p class="avoid"><b>Avoid</b> softening critics, moving objectors out of sight, or making changes behind their backs.</p></td></tr>
+        <tr class="c-S"><td><p class="hq">'It doesn't make sense'</p><p class="ex">'A database with some applications on top.' 'It doesn't do what it says on the tin.' 'How does that compare with hospitals not using it?'</p></td>
+          <td><ul><li>Which part doesn't add up?</li><li>What did you expect it to do?</li><li>What evidence would convince you?</li></ul></td>
+          <td><p>Explain plainly what it does and what it doesn't do. Show it working, including where it doesn't. Put the caveats where people will read them.</p><p class="avoid"><b>Avoid</b> a bigger communications campaign, or hiding the caveat on a page few people read.</p></td></tr>
+        <tr class="c-X"><td><p class="hq">More than one at once</p><p class="ex">'It's a mix of not needing to, because other methods are better, and ethics.'</p></td>
+          <td><ul><li>Which part matters most to you?</li><li>If we fixed that, would you still object?</li></ul></td>
+          <td><p>Answer each part separately. A fix for one will not settle the other.</p><p class="avoid"><b>Avoid</b> labelling people as resisters.</p></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+</div>
+
+<!-- ============ LIBRARY ============ -->
+<div class="panel" id="panel-library" role="tabpanel" aria-labelledby="tab-library" hidden>
+
+<section id="story">
+  <div class="sec-head"><span class="eyebrow">Further reading · The story</span><h2>From a £1 pandemic deal to a break clause</h2></div>
+  <div class="prose">
+    <p>In the spring of 2026 an NHS data official described what it was like to use the Federated Data Platform: 'It makes me feel sick every time I log into the thing.' The official was not alone. A growing number of NHS analysts were refusing to work on the platform, which Palantir had built under a £330mn contract to join up hospital data in England.</p>
+    <p>By then the FDP was the most contested technology contract in British government. Ministers had sought advice on a break clause. Within two months a Commons committee would ask the government to end the contract.</p>
+
+    <h3>A pound in a pandemic</h3>
+    <p>Palantir entered the NHS in March 2020 for £1. Its Foundry software tracked ventilators and protective equipment, and later vaccine logistics. In December 2020 a <span class="fig">£23.5mn</span> two-year contract followed, to help cut elective waiting lists. It put Palantir engineers inside hospitals. Chelsea and Westminster Hospital NHS Foundation Trust piloted Foundry in 2021. Matthew Swindells sat on Palantir's health advisory board from September 2019 until April 2022, when he became the trust's joint chair.</p>
+    <p>Officials told the FT that Palantir excelled at cultivating senior relationships. They described Ming Tang, then NHS England's data chief, as one of its chief evangelists inside the health service.</p>
+
+    <h3>The tender, 2023</h3>
+    <p>NHS England put the national platform out to tender in January 2023. It called the process 'rigorous, competitive, fair and transparent', run over 11 months. Inside the building, officials said, 'Foundry' and 'FDP' were already used interchangeably. The tender documents carried screenshots of Palantir's system with the logo obscured. At least two UK bidders withdrew. The final round had three: a Palantir-led consortium with PwC, Accenture and two UK healthcare consultancies; Oracle Cerner; and IBM with the British firm Quantexa.</p>
+    <p>NHS England chose Palantir. The Cabinet Office pushed to split the contract so the NHS would not depend on one supplier. Only one piece came out, a <span class="fig">£28mn</span> privacy-technology contract for Iqvia. Under the pricing, one person close to the talks said, it cost more to deploy the system to fewer hospitals than to many. One official said the Cabinet Office's concerns were 'overrun by a pincer move between NHS England and Number 10'.</p>
+    <p>In August 2023 the national data guardian, Nicola Byrne, prepared a statement on public concerns about 'privacy, procurement and commercial matters'. She shared an advance copy. Tang wrote back that it would 'create significant problems for me and the programme' and asked for softer language. Byrne delayed publication for 'a substantial rewrite'. The public learnt of the exchange three years later.</p>
+    <p>In November 2023 Palantir won a seven-year contract worth <span class="fig">£330mn</span>. A ministerial statement told Parliament that 'no new data will be collected, and GP data will not be part of the national platform'. A break clause falls in March 2027.</p>
+
+    <h3>Rollout, 2024–2025</h3>
+    <p>On paper the programme succeeded. The government's projects authority rated it green. By the end of February 2026, <span class="fig">123 of 205</span> hospital trusts used the platform and 80 reported benefits. Trusts could choose from up to ten tools. The theatre-scheduling tool ran in 39 trusts, the discharge tool in 25, the waiting-list tool in 23 and the cancer tool in two.</p>
+    <p>At University Hospitals of Northamptonshire, staff said weekly spreadsheet updates had gone and more than 1,000 patients had moved between hospitals to be seen sooner. Elsewhere, data teams said they already had richer tools. Greater Manchester did not sign up. Officials privately conceded that only a fraction of signed-up trusts used the platform fully.</p>
+    <p>In June 2025 officials briefed the health secretary, Wes Streeting, that public perception of the FDP 'has been affected by the profile of Palantir'. They suggested considering 'ways in which we can mitigate this'.</p>
+
+    <h3>Spring 2026</h3>
+    <p>Palantir's software served US Immigration and Customs Enforcement and the Israel Defense Forces. Its chief executive, Alex Karp, backed Donald Trump's immigration crackdown. In March the FT reported that Swindells had urged NHS colleagues in May 2024 to flow GP patient data into the FDP while he was advising Palantir through the lobbying firm Global Counsel. He said none of it had been actioned and that he had followed the NHS's governance rules.</p>
+    <p>On 2 April the FT reported that a growing number of NHS staff refused to work on the FDP. Managers treated the refusals as a 'workplace adjustment' and found them other projects. Streeting said he understood the concerns: 'there's a question people have about values.' In April Trump praised Palantir's 'great war fighting capabilities'. NHS staff blockaded the entrance to NHS England's headquarters.</p>
+    <p>In May the FT reported that NHS England had created an admin role giving a small number of external staff, Palantir's among them, 'unlimited access' to identifiable patient data in one part of the platform. The original data protection impact assessment had not disclosed it. In June a health minister apologised. The same month, London's mayor blocked the Metropolitan Police from awarding Palantir a contract worth up to £50mn.</p>
+
+    <h3>Summer 2026</h3>
+    <p>NHS England and Palantir defended the platform on results: 110,000 additional operations, a 15 per cent fall in discharge delays, 800,000 patients removed from waiting lists. Louis Mosley, head of Palantir UK, said: 'I want us to be judged on the merits of the programme. So, actually, I welcome the scrutiny.'</p>
+    <p>On 3 June the Commons science, innovation and technology committee asked ministers to use the 2027 break clause. On 16 June an FT analysis of data released under freedom of information showed that one trust, Chelsea and Westminster, accounted for <span class="fig">84 per cent</span> of the 217,846 outpatient waiting-list removals cited. Thirteen of the 41 trusts using the theatre tool performed fewer procedures after adoption. Nine days later the FT found that NHS England had added a caveat to its methods page, seven times over: it could not 'draw conclusions about cause and effect'. The Office for Statistics Regulation opened an investigation.</p>
+    <p>In July the Health Foundation reported 'no noticeable improvement' in discharge performance at trusts using the discharge tool, and no meaningful difference from trusts without it. NHS England had held that analysis since December 2025. Its own internal rerun on long-stay patients suggested a fall of about 5 per cent, a third of the headline. Emails showed that an NHS England analyst had written of the operations baseline: 'I don't think this is a valid baseline.' Imperial College London's independent evaluation will report in 2029, two years after the break clause.</p>
+    <p>In August the government's annual projects report raised the FDP's lifetime cost to <span class="fig">£1.1bn</span> and cut forecast benefits to <span class="fig">£808mn</span>. The programme kept its green rating. NHS England called the higher cost 'a clear sign of confidence in the programme'. The FT also identified at least six senior health leaders with declared financial or professional links to Palantir, all within the rules.</p>
+
+    <h3>Autumn 2026</h3>
+    <p>In September the FT reported that NHS Cheshire and Merseyside had added data from five GP practices to its local version of the FDP, under local agreements. Officials said the 2023 promise covered only the national platform. The same month the Byrne emails surfaced. Her office said it had kept editorial control, and added the line that gives this case its title.</p>
+    <p>In October the FT found that more than half of the 40 trusts behind NHS England's waiting-list claim no longer used the tools. More than 60 per cent of the 31 trusts behind a separate 1.2mn-removals claim said they could not quantify the benefit. The statistics regulator opened a second investigation. Andy Burnham, now prime minister, wants government spending to go to British firms. Ministers are weighing a 12-month extension, a split contract and a British replacement; Quantexa is among three or four candidates. Tom Bartlett, who led the NHS England team that built the FDP, called replacement 'a leap into the unknown'.</p>
+    <p class="verdict">The break clause falls in March 2027. Ministers have not yet decided.</p>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="sec-head"><span class="eyebrow">Further reading · Timeline</span><h2>Six years in 43 entries</h2>
+  <p class="lede">Filter by thread. The dashed marker is still ahead.</p></div>
+  <div class="filters" id="tl-filters"></div>
+  <ol class="tl" id="tl"></ol>
+</section>
+
+<section id="numbers">
+  <div class="sec-head"><span class="eyebrow">Further reading · The numbers</span><h2>The claims and the scrutiny</h2>
+  <p class="lede">The benefit figures NHS England and Palantir cited, and what later analyses and freedom of information responses found. Where Palantir or NHS England replied, the reply is included.</p></div>
+  <div class="figs">
+    <figure>
+      <figcaption><span class="eyebrow">Exhibit D</span><b>Adoption across England's 205 trusts, February 2026</b></figcaption>
+      <div class="dots" id="dots" role="img" aria-label="Of 205 trusts: 80 using and reporting benefits, 43 using without reported benefits, 45 signed up but not yet using, 37 not signed up."></div>
+      <div class="legend" id="dots-legend"></div>
+      <p class="cite">Source: NHS data cited by the FT, 2 April 2026. By June, 170 trusts had signed up.</p>
+    </figure>
+    <figure>
+      <figcaption><span class="eyebrow">Exhibit E</span><b>The contract, the lifetime cost and the forecast benefit, £mn</b></figcaption>
+      <svg id="costchart" viewBox="0 0 420 190" width="100%" role="img" aria-label="Palantir contract £330mn; FDP lifetime cost £1,100mn; forecast benefits £808mn."></svg>
+      <p class="cite">Source: NISTA annual report via the FT, 10 August 2026. Real prices, first used this year; earlier estimates are not directly comparable.</p>
+    </figure>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>The claim</th><th>Who made it</th><th>What later analysis found, and replies</th></tr></thead>
+      <tbody id="claims"></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="sec-head"><span class="eyebrow">Further reading · Beyond the NHS</span><h2>Palantir elsewhere in the British state</h2>
+  <p class="lede">These stories ran alongside the FDP debate in 2026. Each ends with a question for your group.</p></div>
+  <div class="ext" id="ext-beyond"></div>
+</section>
+
+<section id="company">
+  <div class="sec-head"><span class="eyebrow">Further reading · The company</span><h2>The company</h2>
+  <p class="lede">Facts about Palantir that both objectors and defenders cite, including what its own staff and investors have said.</p></div>
+  <div class="ext" id="ext-company"></div>
+</section>
+
+<section id="sources">
+  <div class="sec-head"><span class="eyebrow">Further reading · Sources</span><h2>Financial Times reporting used in this dossier</h2>
+  <p class="lede">Quotations are short extracts for teaching and discussion. Read the full articles through your FT subscription.</p></div>
+  <ul class="src" id="src"></ul>
+</section>
+
+</div>
+
+<p class="foot" style="margin-top:22px">Prepared for teaching at Saïd Business School. The case describes events as reported up to 7 October 2026 and does not judge the quality of any person's conduct. The new SRO and the minister's request are teaching devices.</p>
+</div>
+
+<script>
+(function(){
+const QN = {B:"Doesn't benefit me", F:"Isn't fair", S:"Doesn't make sense"};
+const QS = {B:"Benefit", F:"Fairness", S:"Sense", X:"None of these"};
+
+/* ---------- Task 1: voices ---------- */
+const VOICES = [
+ {who:"A senior NHS official", role:"who manages data analysts", date:"2 Apr 2026", q:"People are saying, 'I refuse to work on this software. You have to find something else for me to do'."},
+ {who:"An NHS analytics official", role:"of almost two decades' standing, who calls Palantir 'ethically bankrupt'", date:"2 Apr 2026", q:"I will continue to refuse to engage with any work involving this company."},
+ {who:"A health data official", role:"speaking for their team", date:"2 Apr 2026", q:"[We are] not interested in using [the FDP] as it doesn't do anything new for us."},
+ {who:"The same official", role:"asked why colleagues avoid the platform", date:"2 Apr 2026", q:"It's a mix of not needing to because other methods are better, and ethics. It makes me feel sick every time I log into the thing."},
+ {who:"A senior NHS official", role:"who runs a major hospital's data system", date:"27 Apr 2026", q:"I've had a good look at what it does and it's all pixie dust and rainbows. We've already got access to much richer data sources than this."},
+ {who:"A health official", role:"on the cost of the platform", date:"27 Apr 2026", q:"The biggest issue is that this is an expensive tool being used to do things that could be achieved much more cheaply and easily at a local level."},
+ {who:"A senior health official", role:"on what £330mn bought", date:"27 Apr 2026", q:"For £330mn, what we've got is essentially a database with some applications on top."},
+ {who:"A senior NHS data analyst", role:"on the national story", date:"19 Jun 2026", q:"The FDP doesn't do what it says on the tin. It's being presented as something that connects and unifies all NHS data to improve care. It doesn't do that."},
+ {who:"A health official", role:"who calls the software powerful in some contexts", date:"27 Apr 2026", q:"It's like we bought a Rolls-Royce and right now it's being used to take children to school."},
+ {who:"A rival bidder", role:"in the 2023 procurement", date:"19 Jun 2026", q:"It was stitched up for Palantir, everyone could see that."},
+ {who:"An official", role:"involved in drafting the 2023 tender", date:"19 Jun 2026", q:"[There was a] clear directive to use language that guaranteed they would be shortlisted and ultimately favoured."},
+ {who:"A person close to the contract negotiations", role:"on the pricing model", date:"19 Jun 2026", q:"[It] created a strong financial incentive to adopt the system universally, which is not typical of standard pricing models."},
+ {who:"David Rowland", role:"director, Centre for Health and the Public Interest", date:"5 Mar 2026", q:"The idea that the public interest can be protected simply by officials declaring and managing these conflicts behind closed doors is a nonsense."},
+ {who:"Commons science, innovation and technology committee", role:"report calling for the break clause", date:"3 Jun 2026", q:"Palantir should not have such a significant role in the UK public sector . . . [its] increasing presence . . . represents an unacceptable point of weakness."},
+ {who:"Jessica Morley", role:"Digital Ethics Center, Yale University", date:"19 Jun 2026", q:"We continually underestimate the importance of health data infrastructure, presenting it as something that can be 'bought off the shelf'."},
+ {who:"Layla McCay", role:"policy director, The NHS Alliance, which represents health leaders", date:"27 Apr 2026", q:"[Benefits have been 'patchy' because of] variable uptake, differing levels of workforce engagement and limited clinical pull-through of data because of the lack of primary care data in the platform."},
+ {who:"Tim Squirrell", role:"head of strategy, Foxglove, a campaign group", date:"16 Jun 2026", q:"Palantir can't have it both ways. If it expects us to believe that the FDP is responsible for improvements in some hospitals, it must also accept that things are getting worse as a result of its tools in others."},
+ {who:"Steve Black", role:"healthcare consultant and former NHS data scientist", date:"27 Jul 2026", q:"The health service does not want to do evaluation properly. They come up with ideas and then look for evidence."},
+ {who:"Martin Wrigley MP", role:"Liberal Democrat, Commons technology committee", date:"11 May 2026", q:"This somewhat cavalier attitude to data security demonstrated how this whole [FDP] project does not have security by design at its heart."},
+ {who:"Nicola Byrne", role:"national data guardian for England", date:"28 Jul 2026", q:"[The undisclosed access showed] how quickly confidence erodes."},
+ {who:"A north-west London NHS official", role:"replying to Matthew Swindells' 2024 email", date:"5 Mar 2026", q:"To change that, we'd need substantial assurance that the FDP route will get there faster . . . at present, we don't believe that is true."},
+ {who:"A person involved in the FDP's development", role:"on the UK technology sector", date:"19 Jun 2026", q:"The impact on UK digital innovation is massive. It should have been a huge stimulus for innovation here."},
+ {who:"Wes Streeting", role:"health secretary, on a podcast", date:"late Mar 2026", q:"There's a question people have about values."},
+ {who:"A senior NHS official", role:"on whether staff will speak up", date:"2 Apr 2026", q:"It's a significant number of people but there is also a silent majority that feel uncomfortable but wouldn't want to put their head above a parapet."}
+];
+VOICES.forEach((v,i)=>{v.id="v"+i;});
+const KEEP=[0,2,3,6,7,8,9,13,16,20,21,23];
+const V12=VOICES.filter((v,i)=>KEEP.includes(i));
+
+/* ---------- Task 2: moments ---------- */
+const RT = {B:"Change the deal", F:"Give a say, or change the process", S:"Explain or show", X:"Sell, silence or dismiss", E:"Move them aside"};
+const RC = {B:"B", F:"F", S:"S", X:"X", E:"X"};
+const MOMENTS = [
+ {id:"m1", when:"August 2023", title:"The data guardian's draft",
+  sit:["NHS England is in the final weeks of an 11-month procurement for the Federated Data Platform. Palantir's bid is one of three left, and public debate has already focused on it.",
+       "The national data guardian, Nicola Byrne, is an independent adviser whose job is to safeguard patients' confidential information. She sends NHS England an advance copy of a public statement. It says there is widespread concern about the FDP's 'privacy, procurement and commercial matters', names Palantir as 'particularly contentious', and criticises the programme for having no communications strategy.",
+       "You are NHS England's chief data officer. The statement will be published in days."],
+  voice:"Most notably in the public discourse, the involvement of one potential supplier, Palantir, is particularly contentious.", who:"Nicola Byrne, national data guardian, draft statement",
+  asked:["F","S"], askedNote:"Fairness about procedure (how the supplier is chosen and how patient data will be handled) and sense (the public has not been told what the FDP is).",
+  opts:{
+   A:{t:"Let the statement run, and publish a point-by-point reply the same day.", k:"S", n:"Answers the sense question in public; leaves procedure as it is."},
+   B:{t:"Ask her to soften the language, and to add that the concerns are not well founded.", k:"X", n:"Removes the criticism, not its cause."},
+   C:{t:"Invite her office to review the procurement and data-protection plans before the award, and publish what it finds.", k:"F", n:"Answers the fairness question by opening the process."},
+   D:{t:"Agree with her, and write the communications strategy she says is missing before the award.", k:"S", n:"Answers the sense question; the procedure concern stays open."}},
+  did:"B",
+  reading:"Byrne raised a fairness question about procedure and a sense question about communication. Option B answers neither: it changes what the critic says, not what she is criticising. That works only for as long as nobody finds out.",
+  happened:["Ming Tang, then chief data officer, wrote that publication would 'create significant problems for me and the programme' and asked for 'very inflammatory' language to be softened and 'balance' added. Byrne delayed publication for 'a substantial rewrite'. Palantir won the £330mn contract three months later.","In September 2026 the FT obtained the emails. Ben Coleman MP said he was 'troubled that NHS England tried to suppress criticism'. Layla Moran, chair of the Commons health committee, called it 'deeply concerning that an independent adviser appears to have been overridden'."],
+  src:"FT 18 Sep 2026"},
+ {id:"m2", when:"June 2025", title:"The perception problem",
+  sit:["The FDP is being rolled out across England's hospital trusts. Palantir's software is used by US Immigration and Customs Enforcement and the Israel Defense Forces, and its leaders' politics draw growing criticism. Campaign groups are filing freedom of information requests about the contract.",
+       "Officials brief the health secretary before he meets Palantir's UK head. They write that public perception of the FDP 'has been affected by the profile of Palantir'. They do not know how far this is hurting delivery, but it is 'likely to make it harder to go further with the FDP, and to encourage the inclusion of GP data locally'. GP records are the fullest picture of a patient's health, and ministers have promised they will not be part of the national platform.",
+       "You are the FDP programme team. The briefing ends by asking how to mitigate this."],
+  voice:"The public perception of the FDP . . . has been affected by the profile of Palantir.", who:"Officials' briefing for the health secretary",
+  asked:["F"], askedNote:"Fairness, personal: distrust of Palantir itself, its leaders and its other customers. The briefing files it as a perception problem.",
+  opts:{
+   A:{t:"Make the case: publish the FDP's benefit figures and push adoption across trusts.", k:"X", n:"Answers 'does it work?' when people asked 'is it right?'"},
+   B:{t:"Publish exactly what Palantir staff can and cannot see, who audits them, and invite critics to test it.", k:"S", n:"Explains the safeguards; speaks to part of the distrust."},
+   C:{t:"Commission an independent ethics review with staff and patient representatives before going further with GP data.", k:"F", n:"Gives the objection a say and a process."},
+   D:{t:"Run a training programme so trusts use the tools properly and see the benefits.", k:"X", n:"Implies people object because they are using it wrong."}},
+  did:"A",
+  reading:"The briefing spots the objection correctly, distrust of Palantir, then treats it as perception. Benefit figures and an adoption push answer 'it doesn't make sense' and 'it doesn't benefit me' for people asking 'is this right?'. A training programme would do the same, and adds the message that they are using it wrong. More information about benefits does not reach an objection about who the supplier is, and it tells the objectors they have not been heard.",
+  happened:["NHS England's public answer was benefits and adoption. It published headline benefit figures from 2025 and pressed rollout: by February 2026, 123 of 205 trusts used the platform and 80 were 'reporting benefits'.","Distrust grew instead. NHS analysts began refusing to work on the platform, staff blockaded NHS England's headquarters, and two Commons committees called for the contract to end. In 2026 the data guardian's office wrote: 'the provision of information, while important to do, has not been sufficient to meet public concern. Not all problems are communications problems.'"],
+  src:"FT 2 Apr, 16 Apr, 10 Aug, 18 Sep 2026"},
+ {id:"m3", when:"Spring 2026", title:"Analysts refuse",
+  sit:["Each hospital trust employs data analysts who build the reports managers use to run wards, theatres and waiting lists. A growing number now refuse to work on the FDP.",
+       "Their reasons differ. Some say the platform does nothing their existing tools cannot do. Others call Palantir 'ethically bankrupt' because of its defence and immigration work. Many say both. One manager describes a 'silent majority' who are uncomfortable but will not speak up.",
+       "You are the trusts' digital leadership. Managers ask what to do with staff who refuse."],
+  voice:"It's a mix of not needing to because other methods are better, and ethics. It makes me feel sick every time I log into the thing.", who:"A health data official",
+  asked:["B","F"], askedNote:"Mixed: benefit (our tools already work) and fairness (complicity in Palantir's other work). A reply aimed at one leaves the other standing.",
+  opts:{
+   A:{t:"Make clear that public criticism of the platform by staff is not acceptable.", k:"X", n:"Answers a benefit question with a threat."},
+   B:{t:"Set up a forum where objecting analysts review data access rules and the benefits evidence with the programme.", k:"F", n:"Gives them a say; tests the benefit claims with the sceptics."},
+   C:{t:"Treat refusals as a workplace adjustment and move people to other projects.", k:"E", n:"Respects conscience; the objection leaves the room."},
+   D:{t:"Let teams that already have better tools opt out of FDP tools, and say so publicly.", k:"B", n:"Changes the deal for the benefit objectors."}},
+  did:"C", also:"A",
+  reading:"The objection is mixed. Option C respects conscience, which suppression does not, but it moves the objection out of the room: it never reaches anyone who could change the programme. Option A, which also happened, answers a benefit question ('do we need this?') with a threat, and converts it into a fairness objection about how dissent is treated.",
+  happened:["Refusals were handled as a 'workplace adjustment'; staff were found projects outside the FDP 'wherever possible'.","Senior officials said they had felt pressured to adopt the software, and some had been chastised for publicly criticising it. The FT later referred to reports that staff had been threatened with their jobs for questioning the rollout.","The boycott became national news. In June a Commons committee called for the break clause in Palantir's contract to be used."],
+  src:"FT 2 Apr, 27 Apr, 3 Jun, 18 Sep 2026"},
+ {id:"m4", when:"April 2026", title:"A request for wider access",
+  sit:["Inside the FDP is a holding area, the National Data Integration Tenant. Patient records arrive there with names and identifiers attached, before they are pseudonymised (identifiers replaced with codes) and passed to other systems. Anyone who works there must apply separately for each data set they need to see.",
+       "Engineers from Palantir and consultancies building this area ask for a standing 'admin' role instead, because applying for each data set is 'too inconvenient'. NHS England has made five public 'data promises', including transparency about who can access data and what they can see. Its data protection assessment says only NHS England staff can see directly identifiable data.",
+       "You are NHS England's data governance lead. A senior official's briefing note warns of a 'risk of loss of public confidence'."],
+  voice:"The more people have unrestricted access, the less that aim can be met.", who:"NHS England internal briefing note",
+  asked:["F"], askedNote:"Fairness, procedure: a public promise about who can see patient data.",
+  opts:{
+   A:{t:"Refuse, and keep individual applications for each data set.", k:"F", n:"Keeps the promise; slows the build."},
+   B:{t:"Grant a capped, time-limited admin role, and keep the change internal.", k:"X", n:"May be operationally sound; breaks 'no surprises' by staying quiet."},
+   C:{t:"Grant it, and publish the change and the number of external admins before it starts.", k:"F", n:"Keeps the transparency promise while changing the rule."},
+   D:{t:"Grant it only to NHS England staff with security clearance.", k:"F", n:"Keeps the existing assessment true."}},
+  did:"B",
+  reading:"The question was about procedure: a published promise. The access itself was arguably manageable; capped and time-limited is a reasonable control. The damage came from silence. When the public learnt of it from a newspaper, the issue was no longer access but concealment, and the reassurance 'all data stays under NHS control' stopped being believed.",
+  happened:["On 11 May the FT reported that external staff had 'unlimited access' to identifiable patient data. In June a health minister apologised, and NHS England called the claim in its data protection assessment 'an error'.","The national data guardian said the omission showed 'how quickly confidence erodes' and breached the 'no surprises' principle that governs NHS data. A Commons committee asked the government to set out exactly what access Palantir had."],
+  src:"FT 11 May, 3 Jun, 19 Jun, 25 Jun, 28 Jul 2026"},
+ {id:"m5", when:"May 2026", title:"The benefit figures",
+  sit:["England's hospitals are run by about 205 NHS trusts. The waiting list for planned treatment stood at 7.2mn people in April 2026, far above pre-pandemic levels, so any claim to shorten it carries political weight.",
+       "NHS England and Palantir say trusts using the FDP have delivered 110,000 extra operations and cut discharge delays by 15 per cent (days patients spend in hospital after they are fit to leave, usually while care elsewhere is arranged). The figures compare each trust with its own performance before adopting the tool. They do not compare with trusts that did not adopt it, so they cannot separate the FDP's effect from extra staff, weekend clinics or improvements happening everywhere.",
+       "On 28 May an NHS England analyst writes that it is 'very important to be clear that this does not definitively determine cause and effect'. Ministers and Palantir are quoting the figures in Parliament and the press. You own the figures."],
+  voice:"What it doesn't say is how that compares to the rate of diagnosis at the 198 or so other trusts in the country that aren't using these tools.", who:"Tom Hegarty, Foxglove, 27 April 2026",
+  asked:["S"], askedNote:"Sense, comprehensibility: does the evidence show what you say it shows?",
+  opts:{
+   A:{t:"Withdraw the headline figures until a comparison with non-adopting trusts is done.", k:"S", n:"Concedes the sense question; costs credibility now."},
+   B:{t:"Publish the figures trust by trust, with the caveat on the main page.", k:"S", n:"Explains openly, including the trusts that got worse."},
+   C:{t:"Invite the Health Foundation and critics to design the evaluation with you now.", k:"F", n:"Opens the process; answers sense with procedure."},
+   D:{t:"Keep citing the figures, and add the caveat to the methods page.", k:"X", n:"Keeps selling; puts the honest answer where few look."}},
+  did:"D",
+  reading:"Critics asked a sense question: does the evidence show what you claim? Option D answers it with more selling and hides the honest answer on a page few read. When the caveat was found, the sense question became a fairness question: are they misleading us?",
+  happened:["The caveat appeared seven times on the methods page and not on the main benefits page. The FT found it on 25 June; the statistics regulator opened an investigation.","An FT analysis showed one trust accounted for 84 per cent of outpatient waiting-list removals and 13 of 41 trusts did fewer procedures after adoption. In July the Health Foundation found 'no noticeable improvement' from the discharge tool, an analysis NHS England had held since December 2025.","In October more than half the trusts behind one claim said they no longer used the tools, and the regulator opened a second investigation. An independent evaluation is due in 2029, two years after the break clause."],
+  src:"FT 16 Jun, 25 Jun, 27 Jul, 3 Aug, 3 Oct 2026"}
+];
+
+/* ---------- state ---------- */
+const store = {
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
+const S = Object.assign({sorts:{}, flags:{}, mom:{}, dec:{}}, store.get("fdp-v4",{}));
+const save = ()=>store.set("fdp-v4",S);
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+const flagBtn=v=>`<button class="flag" data-flag="${v.id}" aria-pressed="${!!S.flags[v.id]}">We disagreed</button>`;
+
+/* Task 1 render */
+function renderVoices(){
+  const list=V12;
+  document.getElementById("cards-voices").innerHTML=list.map(v=>{
+    const mine=S.sorts[v.id]||[];
+    const picks=["B","F","S"].map(k=>`<button class="pick c-${k}" data-id="${v.id}" data-k="${k}" title="${QN[k]}" aria-pressed="${mine.includes(k)}">${QS[k]}</button>`).join("");
+    return `<article class="vc${mine.length?" sorted":""}${S.flags[v.id]?" flagged":""}" id="card-${v.id}">
+      <div class="meta"><span>${esc(v.date)}</span></div>
+      <blockquote>${esc(v.q)}</blockquote>
+      <p class="who"><b>${esc(v.who)}</b>, ${esc(v.role)}</p>
+      <div class="row"><div class="picks" role="group" aria-label="Which question?">${picks}</div>${flagBtn(v)}</div>
+    </article>`;}).join("");
+  tallyVoices();
+}
+function tallyVoices(){
+  const list=V12;
+  const c={B:0,F:0,S:0}; list.forEach(v=>(S.sorts[v.id]||[]).forEach(k=>c[k]++));
+  const done=list.filter(v=>(S.sorts[v.id]||[]).length).length, mixed=list.filter(v=>(S.sorts[v.id]||[]).length>1).length, fl=list.filter(v=>S.flags[v.id]).length;
+  document.getElementById("tally-voices").innerHTML=`<span><b>${done}</b>/${list.length} sorted</span>`+["B","F","S"].map(k=>`<span class="c-${k}"><i></i>${QS[k]} <b>${c[k]}</b></span>`).join("")+`<span>More than one <b>${mixed}</b></span><span>Flagged <b>${fl}</b></span>`;
+}
+document.getElementById("cards-voices").addEventListener("click",e=>{
+  const b=e.target.closest(".pick"); const f=e.target.closest(".flag");
+  if(b){const id=b.dataset.id,k=b.dataset.k,cur=new Set(S.sorts[id]||[]);cur.has(k)?cur.delete(k):cur.add(k);S.sorts[id]=[...cur];save();b.setAttribute("aria-pressed",cur.has(k));b.closest(".vc").classList.toggle("sorted",cur.size>0);tallyVoices();}
+  if(f){const id=f.dataset.flag;S.flags[id]=!S.flags[id];save();f.setAttribute("aria-pressed",S.flags[id]);f.closest(".vc").classList.toggle("flagged",S.flags[id]);tallyVoices();}
+});
+document.getElementById("reset-voices").addEventListener("click",()=>{V12.forEach(v=>{delete S.sorts[v.id];delete S.flags[v.id];});save();renderVoices();});
+
+/* Task 2 render */
+const chipQ=k=>`<span class="chip c-${k}">${QN[k]}</span>`;
+function momentHTML(m){
+  const st=S.mom[m.id]||{}, open=!!st.open;
+  const opts=Object.entries(m.opts).map(([k,o])=>{
+    const did=open&&(m.did===k||m.also===k);
+    const tag=open?`<span class="otag"><span class="chip c-${RC[o.k]}">${RT[o.k]}</span>${did?`<span class="didtag">${m.did===k?"What NHS England did":"Also happened"}</span>`:""}${st.pick===k?`<span class="mine">Your group</span>`:""}</span><span class="onote">${esc(o.n)}</span>`:"";
+    return `<button class="opt${did?" did":""}" data-m="${m.id}" data-o="${k}" aria-pressed="${st.pick===k}"><span class="ol">${k}</span><span class="ot">${esc(o.t)}</span>${tag}</button>`;}).join("");
+  return `<article class="moment" id="mo-${m.id}">
+    <div class="mo-head"><span class="eyebrow">${esc(m.when)}</span><h3>${esc(m.title)}</h3></div>
+    <div class="mo-sit">${m.sit.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
+    <blockquote class="mo-voice">${esc(m.voice)}<cite>${esc(m.who)}</cite></blockquote>
+    <p class="mo-ask">Discuss as a group, then choose one response.</p>
+    <div class="mo-opts" role="group" aria-label="Your group's response">${opts}</div>
+    <div class="row"><button class="act${open?" ghost":" primary"}" data-reveal="${m.id}" aria-expanded="${open}" ${st.pick||open?"":"disabled"}>${open?"Hide the reveal":"Open the reveal"}</button><span class="cite">${st.pick?"Your group chose "+st.pick+".":"Choose a response to open the reveal."}</span></div>
+    <div class="reveal" ${open?"":"hidden"}>
+      <div class="rv-block"><span class="eyebrow">The question being asked</span><div class="chips">${m.asked.map(chipQ).join("")}</div><p>${esc(m.askedNote)}</p></div>
+      <div class="rv-block"><span class="eyebrow">NHS England chose ${m.did}${m.also?" (and "+m.also+")":""}</span><p class="rv-reading">${esc(m.reading)}</p></div>
+      <div class="rv-block"><span class="eyebrow">What happened</span><ul>${m.happened.map(h=>`<li>${esc(h)}</li>`).join("")}</ul><p class="cite">${esc(m.src)}</p></div>
+    </div>
+  </article>`;
+}
+function renderMoments(){document.getElementById("moments-list").innerHTML=MOMENTS.map(momentHTML).join("");}
+const ML=document.getElementById("moments-list");
+ML.addEventListener("click",e=>{
+  const o=e.target.closest("[data-o]"), r=e.target.closest("[data-reveal]");
+  if(!o&&!r) return; const id=o?o.dataset.m:r.dataset.reveal;
+  const st=S.mom[id]||(S.mom[id]={});
+  if(o){ if(!st.open) st.pick=st.pick===o.dataset.o?undefined:o.dataset.o; }
+  if(r){ st.open=!st.open; }
+  save(); const m=MOMENTS.find(x=>x.id===id); document.getElementById("mo-"+id).outerHTML=momentHTML(m);
+});
+renderVoices(); renderMoments();
+
+/* ---------- timeline ---------- */
+const THREADS={contract:"Contract and cost",evidence:"Evidence",data:"Patient data",gov:"Governance",people:"Staff and public",wider:"Beyond the NHS"};
+const TL=[
+ ["Mar 2020","contract","Palantir offers Foundry to the NHS for £1 to track ventilators, protective equipment and later vaccine logistics."],
+ ["Dec 2020","contract","£23.5mn two-year contract to help cut elective waiting lists; Palantir engineers placed inside hospitals.",1],
+ ["2021","contract","Foundry piloted at Chelsea and Westminster Hospital NHS Foundation Trust."],
+ ["Apr 2022","gov","Matthew Swindells leaves Palantir's health advisory board and becomes joint chair of four north-west London trusts, including Chelsea and Westminster."],
+ ["Nov 2022","wider","Ministry of Defence awards Palantir £75.2mn over three years; the tender is not advertised."],
+ ["Jan 2023","contract","NHS England tenders the FDP. Insiders say 'Foundry' and 'FDP' are already used interchangeably."],
+ ["Mar 2023","wider","The grid operator, then part of National Grid, starts a Palantir agreement that is not formally disclosed."],
+ ["Aug 2023","gov","Ming Tang lobbies the national data guardian, who delays and substantially rewrites a critical statement.",1],
+ ["Sep 2023","wider","Bedfordshire Police begins a rolling Palantir pilot without a full procurement."],
+ ["Nov 2023","contract","Palantir wins the £330mn seven-year FDP contract. Parliament is told GP data will not be part of the national platform.",1],
+ ["May 2024","data","Swindells emails senior colleagues urging GP patient data to flow into the FDP; colleagues push back."],
+ ["May 2025","evidence","First archived version of NHS England's benefits methods page."],
+ ["Jun 2025","people","Officials brief the health secretary that public perception is 'affected by the profile of Palantir'."],
+ ["Sep 2025","wider","Palantir pledges to invest £1.5bn in the UK over five years."],
+ ["Dec 2025","evidence","The Health Foundation sends NHS England its analysis of the discharge tool."],
+ ["Dec 2025","wider","Ministry of Defence directly awards Palantir a £240.6mn follow-on contract without competition."],
+ ["Feb 2026","evidence","123 of 205 trusts use the FDP; 80 report benefits; programme rated green."],
+ ["5 Mar 2026","gov","FT reports Swindells advised Palantir through Global Counsel while chairing NHS trusts."],
+ ["Late Mar 2026","people","Ministers seek advice on the contract's break clause. Streeting: 'there's a question people have about values.'"],
+ ["2 Apr 2026","people","FT reports a growing number of NHS staff refusing to work on the FDP.",1],
+ ["Apr 2026","people","Trump praises Palantir's 'great war fighting capabilities'. Staff blockade NHS England's headquarters."],
+ ["May 2026","wider","London mayor's office blocks the Met's contract with Palantir worth up to £50mn."],
+ ["11 May 2026","data","FT reveals external staff, including Palantir's, given 'unlimited access' to identifiable data in one part of the FDP.",1],
+ ["28 May 2026","evidence","An NHS England analyst asks for a caveat that the figures do not prove cause and effect."],
+ ["3 Jun 2026","gov","Commons technology committee calls Palantir an 'unacceptable point of weakness' and urges the break clause.",1],
+ ["12 Jun 2026","wider","Zurich court dismisses 22 of Palantir's 23 requests to force replies in a Swiss magazine."],
+ ["16 Jun 2026","evidence","FT analysis: one trust accounts for 84% of outpatient removals; 13 of 41 trusts perform fewer procedures.",1],
+ ["Jun 2026","data","A health minister apologises for the undisclosed access; NHS England corrects its data protection document."],
+ ["25 Jun 2026","evidence","FT finds the cause-and-effect caveat added seven times; statistics regulator investigates."],
+ ["27 Jul 2026","evidence","Health Foundation finds 'no noticeable improvement' from the discharge tool."],
+ ["28 Jul 2026","data","National data guardian criticises the omission as a breach of the 'no surprises' principle."],
+ ["31 Jul 2026","wider","Court filings: the Met's commercial director was 'instructed to ensure Palantir was awarded' the contract."],
+ ["3 Aug 2026","evidence","FOI emails show NHS England will change two headline baselines after internal objections."],
+ ["6 Aug 2026","gov","FT identifies at least six senior health leaders with declared links to Palantir."],
+ ["10 Aug 2026","contract","Lifetime cost rises to £1.1bn; forecast benefits fall to £808mn; rating stays green.",1],
+ ["Aug 2026","wider","Grid operator awards Palantir £21mn without rival bids, citing dependence on its technology."],
+ ["6 Sep 2026","wider","FT: 12 of 43 police forces in England and Wales have Palantir pilot programmes."],
+ ["13 Sep 2026","data","GP data from five practices added to Cheshire and Merseyside's local FDP."],
+ ["18 Sep 2026","gov","FT reveals the 2023 rewrite of the data guardian's statement.",1],
+ ["21 Sep 2026","wider","Five East Midlands police forces end their Palantir pilot after two years."],
+ ["1 Oct 2026","people","Burnham's government searches for a British alternative; options include a 12-month extension or a split contract.",1],
+ ["3 Oct 2026","evidence","More than half of 40 trusts in the waiting-list claim no longer use the tools; second regulator investigation."],
+ ["Mar 2027","contract","Break clause. The contract otherwise requires a minimum two-year extension.",2]
+];
+const tlEl=document.getElementById("tl"), tf=document.getElementById("tl-filters"); let thread="all";
+function renderTL(){tlEl.innerHTML=TL.filter(t=>thread==="all"||t[1]===thread).map(t=>`<li class="${t[3]===2?"future":""}"><span class="d">${t[0]}</span><span class="e">${esc(t[2])}<span class="k">${THREADS[t[1]]}</span></span></li>`).join("");}
+[["all","All threads"],...Object.entries(THREADS)].forEach(([k,l])=>{const b=document.createElement("button");b.textContent=l;b.dataset.t=k;b.setAttribute("aria-pressed",k==="all");tf.appendChild(b);});
+tf.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;thread=b.dataset.t;tf.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderTL();});
+renderTL();
+
+/* ---------- numbers ---------- */
+const dots=document.getElementById("dots");
+const DOTS=[[80,"var(--sense)","Using and reporting benefits"],[43,"var(--accent)","Using, no benefits reported"],[45,"var(--benefit)","Signed up, not yet using"],[37,"var(--line)","Not signed up"]];
+dots.innerHTML=DOTS.map(([n,c])=>`<i style="background:${c}"></i>`.repeat(n)).join("");
+document.getElementById("dots-legend").innerHTML=DOTS.map(([n,c,l])=>`<span><i style="background:${c}"></i>${l} · ${n}</span>`).join("");
+
+const svg=document.getElementById("costchart");
+const bars=[["Palantir contract",330,"var(--accent)"],["FDP lifetime cost",1100,"var(--fair)"],["Forecast benefits",808,"var(--sense)"]];
+const x0=128,w=262,max=1200,sc=v=>v/max*w;
+let s=`<g stroke="var(--line)" stroke-width="1">`;
+[0,400,800,1200].forEach(t=>{s+=`<line x1="${x0+sc(t)}" y1="12" x2="${x0+sc(t)}" y2="158"/>`;});
+s+=`</g>`;
+[0,400,800,1200].forEach(t=>{s+=`<text x="${x0+sc(t)}" y="176" font-size="11" text-anchor="middle" fill="var(--muted)">${t.toLocaleString("en-GB")}</text>`;});
+bars.forEach(([l,v,c],i)=>{const y=22+i*46;
+  s+=`<text x="${x0-8}" y="${y+18}" font-size="11.5" text-anchor="end" fill="var(--ink)">${l}</text>`;
+  s+=`<rect x="${x0}" y="${y}" width="${sc(v)}" height="28" rx="2" fill="${c}"/>`;
+  const inside=sc(v)>70; s+=`<text x="${inside?x0+sc(v)-6:x0+sc(v)+6}" y="${y+18}" font-size="12" font-weight="600" text-anchor="${inside?"end":"start"}" fill="${inside?"var(--card)":"var(--ink)"}">£${v.toLocaleString("en-GB")}mn</text>`;});
+svg.innerHTML=s;
+
+const CLAIMS=[
+ ["110,000 additional operations","NHS England and Palantir, from 2025; 117,000 by October 2026","Thirteen of the 41 trusts using the theatre tool performed fewer procedures after adoption. Figures were not adjusted for extra staff or weekend clinics. An NHS England analyst objected that a six-month baseline was distorted by seasonality; NHS England agreed to change it.","FT 16 Jun, 3 Aug 2026"],
+ ["15 per cent fewer discharge delays","NHS England and Palantir; 14.3 per cent by October 2026","The Health Foundation found 'no noticeable improvement' and no meaningful difference from non-adopting trusts. NHS England's own rerun on long-stay patients suggested about 5 per cent. Palantir said the think-tank compared 'apples and oranges'.","FT 27 Jul 2026"],
+ ["217,846 outpatient waiting-list removals","NHS England, part of the 800,000 headline","Chelsea and Westminster accounts for 84 per cent. Sixteen of the other 36 trusts using the tool flagged fewer than 100 patients. Removals may reflect better list hygiene, not more care.","FT 16 Jun 2026"],
+ ["300,000 flagged for removal across 40 trusts","NHS England","More than half of the 40 trusts no longer use the inpatient or outpatient tools. Palantir says the tools are used most at installation, to clean legacy data.","FT 3 Oct 2026"],
+ ["1.2mn removed using the referral tool","NHS England","More than 60 per cent of the 31 trusts said they could not quantify the benefit; 6 per cent said they did not use the tool.","FT 3 Oct 2026"],
+ ["6.8 per cent more patients told within 28 days whether they have cancer","Palantir; 5.6 per cent by October 2026","The cancer tool runs in two trusts. No comparison with the roughly 198 trusts without it.","FT 27 Apr, 16 Jun 2026"],
+ ["Green delivery rating, within budget","NISTA; Palantir: 'one of 29 with a green delivery rating, out of 172'","Lifetime cost £1.1bn against forecast benefits of £808mn. The switch to real prices means earlier figures cannot be compared. MPs asked for the earlier estimates; NHS England did not give the FT comparable figures.","FT 10 Aug 2026"]
+];
+document.getElementById("claims").innerHTML=CLAIMS.map(c=>`<tr><td class="claim">${esc(c[0])}</td><td>${esc(c[1])}</td><td>${esc(c[2])}<span class="cite">${c[3]}</span></td></tr>`).join("");
+
+/* ---------- beyond + company ---------- */
+const ext=(arr)=>arr.map(a=>`<article><span class="eyebrow">${a.e}</span><h3>${esc(a.h)}</h3>${a.p.map(p=>`<p>${esc(p)}</p>`).join("")}<p class="ask"><span class="rl">For your group</span>${esc(a.k)}</p><p class="cite">${a.c}</p></article>`).join("");
+document.getElementById("ext-beyond").innerHTML=ext([
+ {e:"Metropolitan Police",h:"A blocked contract",p:["In May 2026 the London mayor's office blocked a Met contract worth £25.3mn in 2026–27, with a £24.8mn option for 2027–28. Palantir sued, arguing the decision unlawfully weighed its 'values and ethics'.","The mayor's barrister replied that the Met's commercial director had been 'instructed to ensure Palantir was awarded' the contract and that the process was designed to that end. The Met commissioner warned he would have to pull up to 700 officers from frontline roles."],k:"Palantir says it was judged on its values; the mayor's office says the process was improper. How would each side define a fair decision?",c:"FT 3 Jun, 12 Jun, 31 Jul 2026"},
+ {e:"Police pilots",h:"Pilots in 12 forces",p:["By September 2026, 12 of the 43 forces in England and Wales had Palantir pilots, several through regional organised-crime units, some funded by a £34mn Home Office grant. Procurement data showed many pilots offered at low or no cost, often just below tender thresholds.","Palantir cites results: a Clare's Law check cut from an hour to ten minutes; mobile-phone analysis cut from 48 hours to two. Five East Midlands forces ended their pilot after two years; Lancashire let its pilot lapse."],k:"When does a cheap or free pilot help a public buyer, and when does it narrow the later decision?",c:"FT 6 Sep, 21 Sep 2026"},
+ {e:"Ministry of Defence",h:"Two direct awards",p:["The MoD awarded Palantir £75.2mn in November 2022 without advertising the tender, then £240.6mn in December 2025 by direct award.","A defence minister said the department was sounding out other suppliers 'so that we have a competitive process in future', which would 'keep Palantir on its toes'."],k:"Does how the MoD buys from Palantir change how NHS staff judge the FDP contract?",c:"FT 3 Jun, 1 Oct 2026"},
+ {e:"Grid operator",h:"A contract without rival bids",p:["In August 2026 the National Energy System Operator gave Palantir a £21mn contract without rival bids. It cited a legal exemption for cases where existing dependencies leave no reasonable alternative.","Palantir UK has said of the NHS: 'If a better system emerges, there is no technical barrier to switching.' The grid operator's case shows what switching looks like once a system runs critical processes."],k:"What would switching away from the FDP involve in 2027, and who would bear the cost?",c:"FT 19 Jun, 8 Sep 2026"},
+ {e:"Europe",h:"Other governments",p:["Germany's armed forces excluded Palantir; France and Switzerland cut or excluded contracts; officials in Denmark and the Netherlands want to uncouple.","In Zurich, Palantir sought to force a magazine to print 23 replies to its reporting on Swiss rejections. The court dismissed 22 and ordered Palantir to bear 95 per cent of costs."],k:"Does it matter to an NHS analyst what other European governments decide?",c:"FT 12 Jun, 19 Jun 2026"},
+ {e:"Westminster",h:"Buy British",p:["Andy Burnham told the Commons in his first appearance as prime minister: 'I don't think we should allow the culture of sending everything outside of this country to continue.' The first secretary of state wants 'sovereign capabilities' so the UK is not 'in hock to foreign giants'.","The Cabinet Office has rewritten social-value rules around UK jobs and skills, though they remain legally 'country agnostic'. Some Labour figures argue Palantir UK, with one in six of the firm's staff, counts as British."],k:"Who is asking whether the FDP benefits the country, and who would have to answer?",c:"FT 19 Jun, 1 Oct 2026"}
+]);
+document.getElementById("ext-company").innerHTML=ext([
+ {e:"Politics",h:"Politics",p:["In 2020 Palantir declined to work with ICE's deportation arm, citing the risk of disproportionate enforcement. By 2026 that limit was gone. Alex Karp donated $1mn to a pro-Trump super PAC after the 2024 election and called the company 'completely anti-woke'.","Insiders date the shift to 2023, when the share price took off and the 7 October attack hardened Karp's views."],k:"Do the CEO's politics belong in an NHS procurement decision? Why, or why not?",c:"FT 8 Jul 2026"},
+ {e:"Staff",h:"Staff",p:["After a company video in January 2026, one employee asked how to explain it to a customer that was a children's hospital. An April post of Karp's manifesto triggered an internal revolt and a new communications policy.","Palantir declared 4,429 staff in December 2025 and lost more than five dozen experienced engineers to AI labs in a year, by a recruiter's count. Palantir disputes the scale."],k:"What does it tell you that Palantir's own staff raised similar objections?",c:"FT 8 Jul 2026"},
+ {e:"Investors",h:"Investors",p:["The Dutch pension fund ABP sold €825mn of Palantir shares, citing ICE and conflict-zone work. Norway's wealth fund backed human-rights proposals that won almost 60 per cent of external shareholders and still failed."],k:"Should investors' objections weigh with a public buyer?",c:"FT 8 Jul 2026"},
+ {e:"Finances",h:"Finances and UK footprint",p:["In the second quarter of 2026 Palantir's US commercial revenue rose 149 per cent and government revenue 90 per cent. Its enterprise value of $375bn was 60 times trailing revenue, against ten times for Microsoft.","The UK is its second-largest market and home to about one in six staff. It pledged £1.5bn of UK investment in 2025 and says all UK government data stays in the UK."],k:"How does Palantir's UK footprint affect the question of whether it counts as a British supplier?",c:"FT 19 Jun, 4 Aug 2026"}
+]);
+
+/* ---------- sources ---------- */
+const SRC=[
+ ["5 Mar 2026","NHS official pushed to add patient data to Palantir platform while also advising company","Laura Hughes"],
+ ["2 Apr 2026","NHS staff boycott Palantir's data platform over ethical concerns","Laura Hughes"],
+ ["16 Apr 2026","The NHS should keep Palantir for patients' sake (opinion)","John Gapper"],
+ ["27 Apr 2026","The tensions behind Palantir's efforts to transform English healthcare","Laura Hughes"],
+ ["11 May 2026","NHS to grant Palantir contractors 'unlimited access' to patient data","Laura Hughes"],
+ ["3 Jun 2026","Palantir should not have 'significant role' in UK public data systems, MPs say","Laura Hughes"],
+ ["12 Jun 2026","The Palantir controversy is a block on NHS progress (opinion)","Camilla Cavendish"],
+ ["12 Jun 2026","Palantir loses legal challenge against Swiss investigative magazine","Mercedes Ruehl, Rafe Rosner-Uddin"],
+ ["16 Jun 2026","Palantir NHS claims rely on just a few hospitals","Laura Hughes, Amy Borrett"],
+ ["19 Jun 2026","Inside Palantir's fight over the future of the NHS (Big Read)","Laura Hughes, Madhumita Murgia"],
+ ["25 Jun 2026","NHS England admits key data does not prove Palantir's effectiveness","Laura Hughes, Amy Borrett"],
+ ["8 Jul 2026","The price of Palantir's politics (Big Read)","Joe Miller, George Hammond, Chris Cook"],
+ ["27 Jul 2026","Palantir tool has not cut hospital discharge delays, says study","Amy Borrett"],
+ ["28 Jul 2026","NHS England reprimanded over Palantir data access omission","Laura Hughes"],
+ ["31 Jul 2026","Sadiq Khan accuses Met of trying to fix contract for Palantir","Laura Hughes"],
+ ["3 Aug 2026","NHS England to revise Palantir platform data after staff concerns","Amy Borrett, Laura Hughes"],
+ ["4 Aug 2026","Palantir rides high on greed and fear, but mostly fear (Lex)","John Foley"],
+ ["6 Aug 2026","At least half a dozen senior NHS leaders linked to Palantir","Laura Hughes, Amy Borrett"],
+ ["10 Aug 2026","UK raises cost projections for Palantir's NHS data platform","Amy Borrett, Laura Hughes"],
+ ["6 Sep 2026","Twelve English police forces involved in contentious Palantir pilot programmes","Robert Wright"],
+ ["8 Sep 2026","Britain's grid operator gave Palantir contract without inviting rival bids","Amy Borrett, Rachel Millard, Laura Hughes"],
+ ["13 Sep 2026","GP data quietly added to Palantir's NHS data platform","Laura Hughes"],
+ ["18 Sep 2026","NHS executive lobbied data watchdog to rewrite criticism before Palantir deal","Amy Borrett, Laura Hughes"],
+ ["21 Sep 2026","Five UK police forces end Palantir project after two years","Robert Wright"],
+ ["1 Oct 2026","Andy Burnham searches for UK alternative to Palantir","Chris Smyth, Lucy Fisher, Laura Hughes"],
+ ["3 Oct 2026","Over 20 NHS trusts have ditched Palantir waiting-list tools, analysis shows","Amy Borrett, Laura Hughes"]
+];
+document.getElementById("src").innerHTML=SRC.map(s=>`<li>${esc(s[1])}<span class="cite">${s[2]} · Financial Times · ${s[0]}</span></li>`).join("");
+
+/* ---------- tabs + hash ---------- */
+const libIds=["story","timeline","numbers","beyond","company","sources","library"];
+function show(which){
+  const lib=which==="library";
+  document.getElementById("panel-class").hidden=lib; document.getElementById("panel-library").hidden=!lib;
+  document.getElementById("jump-class").hidden=lib; document.getElementById("jump-library").hidden=!lib;
+  document.getElementById("tab-class").setAttribute("aria-selected",!lib); document.getElementById("tab-library").setAttribute("aria-selected",lib);
+  try{localStorage.setItem("fdp-tab",which);}catch(e){}
+}
+document.getElementById("tab-class").addEventListener("click",()=>{show("class");window.scrollTo({top:0});});
+document.getElementById("tab-library").addEventListener("click",()=>{show("library");window.scrollTo({top:0});});
+function fromHash(){const h=location.hash.slice(1); if(!h) return false; if(libIds.includes(h)){show("library");}else{show("class");} const el=document.getElementById(h); if(el&&h!=="library"&&h!=="class") setTimeout(()=>el.scrollIntoView(),0); return true;}
+window.addEventListener("hashchange",fromHash);
+if(!fromHash()){let t="class";try{t=localStorage.getItem("fdp-tab")||"class";}catch(e){} show(t);}
+})();
+</script>
+
+</body></html>
