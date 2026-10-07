@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parade of Trades Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a site foreman's weekly tally card. One week edited at a time on top, the 30-week log beneath, results at the bottom. */
+:root{
+  --paper:#e9ecef; --card:#fbfbfa; --ink:#18212c; --muted:#5a6573; --line:#cfd5dc;
+  --accent:#b8560f; --accent-soft:#f6e3d3; --warn:#a3122a;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --accent:#f0954a; --accent-soft:#3a2516; --warn:#ff6b7f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --accent:#f0954a; --accent-soft:#3a2516; --warn:#ff6b7f; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:clamp(32px,8.5vw,46px);font-weight:800;font-stretch:75%;text-transform:uppercase}
+h2{font-size:21px;font-weight:750;font-stretch:85%}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.intro{margin:0;color:var(--muted);font-size:15px}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:16px}
+
+/* Week editor */
+.weekhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.weekhead .wk{font-family:var(--f-display);font-weight:800;font-stretch:75%;font-size:34px;text-transform:uppercase;line-height:1}
+.nav{display:flex;gap:8px}
+.nav button{width:44px;height:44px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;font-family:var(--f-mono);font-size:18px}
+.nav button:disabled{opacity:.35;cursor:not-allowed}
+.step{display:flex;flex-direction:column;gap:8px}
+.step label,.step .lab{font-family:var(--f-display);font-weight:650;font-size:15px}
+.step .lab small{font-family:var(--f-body);font-weight:400;color:var(--muted);font-size:13.5px;display:block}
+.counter{display:flex;align-items:center;gap:10px}
+.counter button{width:48px;height:48px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;font-size:22px;font-family:var(--f-mono)}
+.counter input{width:80px;height:48px;text-align:center;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.pips{display:flex;flex-wrap:wrap;gap:8px}
+.pip{width:48px;height:48px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;font-family:var(--f-mono);font-weight:600;font-size:19px}
+.pip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.pip.suggest{border-color:var(--accent);border-width:2.5px}
+.pip:disabled{opacity:.3;cursor:not-allowed}
+.spare{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px dashed var(--line);padding-top:12px}
+.spare span{color:var(--muted);font-size:15px}
+.spare strong{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.msg{margin:0;font-size:14px;color:var(--warn);min-height:1.2em}
+.next{height:48px;border:0;border-radius:4px;background:var(--accent);color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+
+/* Results */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile .v{font-family:var(--f-display);font-weight:800;font-stretch:80%;font-size:32px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .k{font-size:13.5px;color:var(--muted);line-height:1.3}
+.tile.key{background:var(--accent-soft);border-color:transparent}
+.tile.key .v{color:var(--accent)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+
+/* Log */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:right;padding:6px 8px;border-bottom:1.5px solid var(--ink);vertical-align:bottom}
+th:first-child,td:first-child{text-align:left}
+td{font-family:var(--f-mono);text-align:right;padding:9px 8px;border-bottom:1px solid var(--line)}
+tbody tr{cursor:pointer}
+tbody tr.cur{background:var(--accent-soft)}
+tbody tr.blank td:not(:first-child){color:var(--line)}
+tfoot td{font-weight:600;border-top:1.5px solid var(--ink);border-bottom:0}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.linkbtn{background:none;border:0;color:var(--muted);font-family:var(--f-mono);font-size:13px;text-decoration:underline;padding:8px 0}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
+.confirm button{height:40px;padding:0 14px;border-radius:4px;border:1.5px solid var(--line);background:transparent;color:var(--ink)}
+.confirm button.danger{background:var(--warn);border-color:var(--warn);color:#fff}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="eyebrow">Your worksheet</span>
+    <h1>Parade of Trades</h1>
+    <p class="intro">Log one line per week. Spare capacity, utilisation and flow calculate automatically. Your entries stay on this phone.</p>
+  </header>
+
+  <section class="panel" aria-labelledby="wk-title">
+    <div class="weekhead">
+      <span class="wk" id="wk-title">Week 1</span>
+      <div class="nav"><button id="prev" aria-label="Previous week">‹</button><button id="nextw" aria-label="Next week">›</button></div>
+    </div>
+
+    <div class="step">
+      <label for="avail">Work available <small>Batches waiting for you at the start of the week</small></label>
+      <div class="counter"><button id="aMinus" aria-label="One fewer batch">−</button><input id="avail" type="number" inputmode="numeric" min="0" max="35" placeholder="–"><button id="aPlus" aria-label="One more batch">+</button></div>
+    </div>
+
+    <div class="step">
+      <span class="lab" id="lab-roll">Your roll of the dice</span>
+      <div class="pips" role="group" aria-labelledby="lab-roll" id="rolls"></div>
+    </div>
+
+    <div class="step">
+      <span class="lab" id="lab-done">Work done <small>Batches you moved to the next stage</small></span>
+      <div class="pips" role="group" aria-labelledby="lab-done" id="dones"></div>
+    </div>
+
+    <div class="spare"><span>Spare capacity this week</span><strong id="spare">–</strong></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <button class="next" id="save">Save and go to week 2</button>
+  </section>
+
+  <section class="panel" aria-labelledby="res-title">
+    <h2 id="res-title">Productivity metrics</h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="log-title">
+    <h2 id="log-title">Weekly log</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Week</th><th>Avail&shy;able</th><th>Roll</th><th>Done</th><th>Spare</th></tr></thead>
+      <tbody id="log"></tbody>
+      <tfoot id="totals"></tfoot>
+    </table></div>
+    <div class="foot"><span class="eyebrow">Tap a row to edit it</span><span id="resetwrap"><button class="linkbtn" id="reset">Clear my worksheet</button></span></div>
+  </section>
+</div>
+
+<script>
+const WEEKS=30, TARGET=35, KEY="parade-of-trades-v1";
+let rows=Array.from({length:WEEKS},()=>({a:null,r:null,d:null}));
+let cur=0;
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&Array.isArray(s.rows)){rows=s.rows;cur=s.cur||0}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({rows,cur}))}catch(e){}};
+const $=id=>document.getElementById(id);
+const filled=r=>r.a!==null||r.r!==null||r.d!==null;
+
+function totals(){
+  const weeks=rows.filter(r=>(r.a||0)>0).length;           // COUNTIF(C,">0")
+  const cap=rows.reduce((s,r)=>s+(r.r||0),0);               // SUM(D)
+  const done=rows.reduce((s,r)=>s+(r.d||0),0);              // SUM(E)
+  const spare=rows.reduce((s,r)=>s+(r.r!==null?(r.r-(r.d||0)):0),0);
+  return {weeks,cap,done,spare,util:cap?done/cap:null,flow:weeks?done/weeks:null};
+}
+
+function renderEditor(){
+  const r=rows[cur];
+  $("wk-title").textContent="Week "+(cur+1);
+  $("prev").disabled=cur===0; $("nextw").disabled=cur===WEEKS-1;
+  $("avail").value=r.a===null?"":r.a;
+  $("rolls").innerHTML=[1,2,3,4,5,6].map(n=>`<button class="pip" data-r="${n}" aria-pressed="${r.r===n}">${n}</button>`).join("");
+  const cap=Math.min(r.a??6, r.r??6), suggest=(r.a!==null&&r.r!==null)?Math.min(r.a,r.r):null;
+  $("dones").innerHTML=[0,1,2,3,4,5,6].map(n=>`<button class="pip${n===suggest&&r.d===null?" suggest":""}" data-d="${n}" aria-pressed="${r.d===n}" ${n>cap?"disabled":""}>${n}</button>`).join("");
+  $("spare").textContent=r.r===null?"–":(r.r-(r.d||0));
+  let m="";
+  if(r.a!==null&&r.d!==null&&r.d>r.a)m="You cannot move more batches than you had waiting.";
+  else if(r.r!==null&&r.d!==null&&r.d>r.r)m="You cannot move more batches than your roll.";
+  $("msg").textContent=m;
+  $("save").textContent=cur<WEEKS-1?`Save and go to week ${cur+2}`:"Save week 30";
+  $("rolls").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{r.r=+b.dataset.r;if(r.d!==null&&r.d>Math.min(r.r,r.a??6))r.d=null;commit()});
+  $("dones").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{r.d=+b.dataset.d;commit()});
+}
+
+function renderResults(){
+  const t=totals();
+  const pct=v=>v===null?"–":Math.round(v*100)+"%";
+  $("tiles").innerHTML=`
+<div class="tile key"><span class="v">${pct(t.util)}</span><span class="k">Utilisation: how well you were used as a resource (work done ÷ total capacity)</span></div>
+<div class="tile key"><span class="v">${t.flow===null?"–":t.flow.toFixed(2)}</span><span class="k">Flow: batches per active week through your step (velocity)</span></div>
+<div class="tile"><span class="v">${t.done}<span style="font-size:.55em;color:var(--muted)"> / ${TARGET}</span></span><span class="k">Work done</span><div class="bar"><i style="width:${Math.min(100,t.done/TARGET*100)}%"></i></div></div>
+<div class="tile"><span class="v">${t.cap}</span><span class="k">Total capacity (sum of your rolls)</span></div>
+<div class="tile"><span class="v">${t.weeks}</span><span class="k">Weeks in your active window</span></div>
+<div class="tile"><span class="v">${t.spare}</span><span class="k">Spare capacity in total</span></div>`;
+}
+
+function renderLog(){
+  const last=Math.max(cur,...rows.map((r,i)=>filled(r)?i:-1));
+  const show=Math.min(WEEKS,Math.max(last+3,8));
+  $("log").innerHTML=rows.slice(0,show).map((r,i)=>{
+    const f=v=>v===null?"·":v;
+    return `<tr data-i="${i}" class="${i===cur?"cur":""} ${filled(r)?"":"blank"}"><td>${i+1}</td><td>${f(r.a)}</td><td>${f(r.r)}</td><td>${f(r.d)}</td><td>${r.r===null?"·":r.r-(r.d||0)}</td></tr>`}).join("");
+  const t=totals();
+  $("totals").innerHTML=`<tr><td>Total</td><td>${t.weeks} wks</td><td>${t.cap}</td><td>${t.done}</td><td>${t.spare}</td></tr>`;
+  $("log").querySelectorAll("tr").forEach(tr=>tr.onclick=()=>{cur=+tr.dataset.i;save();render();document.getElementById("wk-title").scrollIntoView({behavior:"smooth",block:"center"})});
+}
+
+function render(){renderEditor();renderResults();renderLog()}
+function commit(){save();render()}
+
+function setA(v,fromInput){const r=rows[cur];r.a=(v===null||isNaN(v))?null:Math.max(0,Math.min(TARGET,v));
+  if(r.d!==null&&r.a!==null&&r.d>r.a)r.d=null;save();
+  if(fromInput){const keep=$("avail").value;render();$("avail").value=keep;$("avail").focus()}else render()}
+$("avail").oninput=e=>{const v=e.target.value;setA(v===""?null:parseInt(v,10),true)};
+$("aMinus").onclick=()=>setA(Math.max(0,(rows[cur].a??1)-1));
+$("aPlus").onclick=()=>setA((rows[cur].a??-1)+1);
+$("prev").onclick=()=>{cur=Math.max(0,cur-1);save();render()};
+$("nextw").onclick=()=>{cur=Math.min(WEEKS-1,cur+1);save();render()};
+$("save").onclick=()=>{
+  const r=rows[cur];
+  if(r.a!==null&&r.r!==null&&r.d===null)r.d=Math.min(r.a,r.r);
+  if(cur<WEEKS-1){cur++;
+    const p=rows[cur-1];
+    if(rows[cur].a===null&&p.a!==null&&p.d!==null)rows[cur].a=p.a-p.d;   // leftover batches carry forward; add what arrived
+  }
+  commit();$("wk-title").scrollIntoView({behavior:"smooth",block:"center"});
+};
+function bindReset(){
+  $("resetwrap").innerHTML=`<button class="linkbtn" id="reset">Clear my worksheet</button>`;
+  $("reset").onclick=()=>{
+    $("resetwrap").innerHTML=`<span class="confirm">Clear all 30 weeks? <button id="no">Keep</button><button class="danger" id="yes">Clear</button></span>`;
+    $("no").onclick=bindReset;
+    $("yes").onclick=()=>{rows=Array.from({length:WEEKS},()=>({a:null,r:null,d:null}));cur=0;commit();bindReset()};
+  };
+}
+bindReset();
+render();
+</script>
+</body>
+</html>
