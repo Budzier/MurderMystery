@@ -1,0 +1,483 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Parade of Trades Worksheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a site foreman's weekly tally card. Role switch on top, one week edited at a time, results, then the 40-week log. */
+:root{
+  --paper:#e9ecef; --card:#fbfbfa; --ink:#18212c; --muted:#5a6573; --line:#cfd5dc;
+  --accent:#b8560f; --accent-soft:#f6e3d3; --warn:#a3122a;
+  --swan:#1d2633; --swan-ink:#f2f4f7; --swan-soft:#dfe3e9;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --accent:#f0954a; --accent-soft:#3a2516; --warn:#ff6b7f;
+  --swan:#e5e9ee; --swan-ink:#10151b; --swan-soft:#26303d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10151b; --card:#19202a; --ink:#e5e9ee; --muted:#9ba6b4; --line:#2b3541;
+  --accent:#f0954a; --accent-soft:#3a2516; --warn:#ff6b7f;
+  --swan:#e5e9ee; --swan-ink:#10151b; --swan-soft:#26303d; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:clamp(32px,8.5vw,46px);font-weight:800;font-stretch:75%;text-transform:uppercase}
+h2{font-size:21px;font-weight:750;font-stretch:85%}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.intro{margin:0;color:var(--muted);font-size:15px}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:16px}
+
+/* Role switch */
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden}
+.seg button{height:46px;border:0;background:transparent;color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+.tradepick{display:flex;flex-direction:column;gap:6px}
+.tradepick select{height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--card);color:var(--ink);font-family:var(--f-body);font-size:16px;padding:0 10px}
+
+/* Week editor */
+.weekhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.weekhead .wk{font-family:var(--f-display);font-weight:800;font-stretch:75%;font-size:34px;text-transform:uppercase;line-height:1}
+.nav{display:flex;gap:8px}
+.nav button{width:44px;height:44px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;font-family:var(--f-mono);font-size:18px}
+.nav button:disabled{opacity:.35;cursor:not-allowed}
+.step{display:flex;flex-direction:column;gap:8px}
+.step label,.step .lab{font-family:var(--f-display);font-weight:650;font-size:15px}
+.step .lab small,.step label small{font-family:var(--f-body);font-weight:400;color:var(--muted);font-size:13.5px;display:block}
+.counter{display:flex;align-items:center;gap:10px}
+.counter button{width:48px;height:48px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:4px;font-size:22px;font-family:var(--f-mono)}
+.counter input,.counter output{width:80px;height:48px;text-align:center;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center}
+.pips{display:flex;flex-wrap:wrap;gap:8px}
+.pip{width:48px;height:48px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;font-family:var(--f-mono);font-weight:600;font-size:19px}
+.pip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.pip.suggest{border-color:var(--accent);border-width:2.5px}
+.pip:disabled{opacity:.3;cursor:not-allowed}
+.dest{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.dest button{min-height:48px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;text-align:left;padding:6px 10px;display:flex;gap:10px;align-items:center;font-size:14.5px;line-height:1.25}
+.dest button b{font-family:var(--f-mono);font-size:18px;min-width:16px}
+.dest button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.spare{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px dashed var(--line);padding-top:12px}
+.spare span{color:var(--muted);font-size:15px}
+.spare strong{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.msg{margin:0;font-size:14px;color:var(--warn);min-height:1.2em}
+.next{height:48px;border:0;border-radius:4px;background:var(--accent);color:#fff;font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+.swanbtn{height:48px;border:1.5px solid var(--swan);border-radius:4px;background:transparent;color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.03em;text-transform:uppercase}
+.stopped{background:var(--swan);color:var(--swan-ink);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.stopped strong{font-family:var(--f-display);font-size:22px;font-weight:800;font-stretch:80%;text-transform:uppercase;letter-spacing:.02em}
+.stopped p{margin:0;font-size:15px}
+.stopped button{align-self:flex-start;background:none;border:0;color:var(--swan-ink);font-family:var(--f-mono);font-size:13px;text-decoration:underline;padding:6px 0}
+.verdict{border-radius:6px;padding:12px 14px;background:var(--accent-soft);font-size:15.5px}
+.verdict b{font-family:var(--f-display);font-weight:750}
+.rule{margin:0;font-size:14px;color:var(--muted)}
+
+/* Results */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile .v{font-family:var(--f-display);font-weight:800;font-stretch:80%;font-size:32px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .k{font-size:13.5px;color:var(--muted);line-height:1.3}
+.tile.key{background:var(--accent-soft);border-color:transparent}
+.tile.key .v{color:var(--accent)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.hbars{display:flex;flex-direction:column;gap:8px}
+.hb{display:grid;grid-template-columns:minmax(0,9.5em) 1fr 2.2em;gap:10px;align-items:center;font-size:14.5px}
+.hb span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .track{height:14px;background:var(--paper);border-radius:2px;overflow:hidden}
+.hb .track i{display:block;height:100%;background:var(--accent)}
+.hb b{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+
+/* Log */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:right;padding:6px 6px;border-bottom:1.5px solid var(--ink);vertical-align:bottom}
+th:first-child,td:first-child{text-align:left}
+td{font-family:var(--f-mono);text-align:right;padding:9px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.l{text-align:left;font-family:var(--f-body);white-space:normal}
+tbody tr{cursor:pointer}
+tbody tr.cur{background:var(--accent-soft)}
+tbody tr.swan td{background:var(--swan-soft)}
+tbody tr.swan.cur td{background:var(--accent-soft)}
+tbody tr.blank td:not(:first-child){color:var(--line)}
+tfoot td{font-weight:600;border-top:1.5px solid var(--ink);border-bottom:0}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.linkbtn{background:none;border:0;color:var(--muted);font-family:var(--f-mono);font-size:13px;text-decoration:underline;padding:8px 0}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px}
+.confirm button{height:40px;padding:0 14px;border-radius:4px;border:1.5px solid var(--line);background:transparent;color:var(--ink)}
+.confirm button.danger{background:var(--warn);border-color:var(--warn);color:#fff}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="app">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="eyebrow">Your worksheet</span>
+    <h1>Parade of Trades</h1>
+    <p class="intro">Log one line per week. Spare capacity, utilisation and flow calculate automatically. Your entries stay on this phone.</p>
+  </header>
+
+  <div class="seg" role="group" aria-label="Your role">
+    <button id="roleTrade" aria-pressed="true">I'm a trade</button>
+    <button id="roleCust" aria-pressed="false">I'm the customer</button>
+  </div>
+
+  <!-- TRADE VIEW -->
+  <div id="tradeView" style="display:flex;flex-direction:column;gap:20px">
+    <div class="tradepick">
+      <label class="eyebrow" for="tradeSel">Your trade</label>
+      <select id="tradeSel"></select>
+    </div>
+
+    <section class="panel" aria-labelledby="wk-title">
+      <div class="weekhead">
+        <span class="wk" id="wk-title">Week 1</span>
+        <div class="nav"><button id="prev" aria-label="Previous week">‹</button><button id="nextw" aria-label="Next week">›</button></div>
+      </div>
+
+      <div id="stoppedBox" class="stopped" hidden>
+        <strong>Black Swan: site stopped</strong>
+        <p>Nobody rolls this week. Your batches wait and nothing moves.</p>
+        <button id="undoSwan">Undo this Black Swan</button>
+      </div>
+
+      <div id="liveWeek" style="display:flex;flex-direction:column;gap:16px">
+        <div class="step">
+          <label for="avail">Work available <small>Batches waiting for you at the start of the week, including any rework</small></label>
+          <div class="counter"><button id="aMinus" aria-label="One fewer batch">−</button><input id="avail" type="number" inputmode="numeric" min="0" max="60" placeholder="–"><button id="aPlus" aria-label="One more batch">+</button></div>
+        </div>
+
+        <div class="step">
+          <span class="lab" id="lab-rw">Rework received <small>Rejected batches the customer handed back to you this week. Each one is added to your work available.</small></span>
+          <div class="counter" role="group" aria-labelledby="lab-rw"><button id="rwMinus" aria-label="One fewer rework batch">−</button><output id="rw">0</output><button id="rwPlus" aria-label="One more rework batch">+</button></div>
+        </div>
+
+        <div class="step">
+          <span class="lab" id="lab-roll">Your roll of the dice</span>
+          <div class="pips" role="group" aria-labelledby="lab-roll" id="rolls"></div>
+        </div>
+
+        <div class="step">
+          <span class="lab" id="lab-done">Work done <small>Batches you moved to the next stage</small></span>
+          <div class="pips" role="group" aria-labelledby="lab-done" id="dones"></div>
+        </div>
+
+        <div class="spare"><span>Spare capacity this week</span><strong id="spare">–</strong></div>
+        <p class="msg" id="msg" aria-live="polite"></p>
+        <button class="next" id="save">Save and go to week 2</button>
+        <button class="swanbtn" id="swan">Black Swan: stop 3 weeks from here</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="res-title">
+      <h2 id="res-title">Productivity metrics</h2>
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="log-title">
+      <h2 id="log-title">Weekly log</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Week</th><th>Avail&shy;able</th><th>Re&shy;work</th><th>Roll</th><th>Done</th><th>Spare</th></tr></thead>
+        <tbody id="log"></tbody>
+        <tfoot id="totals"></tfoot>
+      </table></div>
+      <div class="foot"><span class="eyebrow">Tap a row to edit it</span><span id="resetwrap"></span></div>
+    </section>
+  </div>
+
+  <!-- CUSTOMER VIEW -->
+  <div id="custView" hidden style="flex-direction:column;gap:20px">
+    <section class="panel" aria-labelledby="cwk-title">
+      <div class="weekhead">
+        <span class="wk" id="cwk-title">Week 1</span>
+        <div class="nav"><button id="cprev" aria-label="Previous week">‹</button><button id="cnextw" aria-label="Next week">›</button></div>
+      </div>
+      <p class="rule">Roll first each week, before QA &amp; Release. Double 6: Black Swan, everyone stops 3 weeks. 1 or 2: one delivered batch fails acceptance, roll again for where it goes. 3, 4, 5 or a single 6: accepted. You can only reject once QA &amp; Release has delivered a batch.</p>
+
+      <div id="cStoppedBox" class="stopped" hidden>
+        <strong>Black Swan: site stopped</strong>
+        <p>You don't roll this week either.</p>
+        <button id="cUndoSwan">Undo this Black Swan</button>
+      </div>
+
+      <div id="cLive" style="display:flex;flex-direction:column;gap:16px">
+        <div class="step">
+          <span class="lab" id="lab-croll">Your roll</span>
+          <div class="pips" role="group" aria-labelledby="lab-croll" id="crolls"></div>
+        </div>
+        <div class="step" id="c2step" hidden>
+          <span class="lab" id="lab-c2"></span>
+          <div id="c2" role="group" aria-labelledby="lab-c2"></div>
+        </div>
+        <div class="verdict" id="cverdict" hidden></div>
+        <button class="next" id="csave">Save and go to week 2</button>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="cres-title">
+      <h2 id="cres-title">Customer tally</h2>
+      <div class="tiles" id="ctiles"></div>
+      <div class="step">
+        <span class="lab">Where rejected batches went</span>
+        <div class="hbars" id="chbars"></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="clog-title">
+      <h2 id="clog-title">Customer log</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Week</th><th>Roll</th><th>2nd</th><th style="text-align:left">Outcome</th></tr></thead>
+        <tbody id="clog"></tbody>
+      </table></div>
+      <div class="foot"><span class="eyebrow">Tap a row to edit it</span><span id="cresetwrap"></span></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const WEEKS=40, TARGET=35, SWAN_LEN=3, KEY="parade-of-trades-v2", OLDKEY="parade-of-trades-v1";
+const TRADES=["Data Engineering","Data Labeling","Model Development","Integration/MLOps","QA & Release"];
+const blankRow=()=>({a:null,r:null,d:null,rw:0,swan:false});
+const blankC=()=>({roll:null,second:null,swan:false});
+let st={role:"trade",trade:"",rows:Array.from({length:WEEKS},blankRow),cur:0,crows:Array.from({length:WEEKS},blankC),ccur:0};
+
+try{
+  const s=JSON.parse(localStorage.getItem(KEY)||"null");
+  if(s&&Array.isArray(s.rows))st=Object.assign(st,s);
+  else{const o=JSON.parse(localStorage.getItem(OLDKEY)||"null");
+    if(o&&Array.isArray(o.rows)){o.rows.forEach((r,i)=>{if(i<WEEKS)st.rows[i]=Object.assign(blankRow(),r)});st.cur=o.cur||0}}
+}catch(e){}
+while(st.rows.length<WEEKS)st.rows.push(blankRow());
+while(st.crows.length<WEEKS)st.crows.push(blankC());
+st.rows.forEach(r=>{if(r.rw==null)r.rw=0;if(r.swan==null)r.swan=false});
+
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+/* ---------- TRADE ---------- */
+const rows=()=>st.rows;
+const filled=r=>r.swan||r.a!==null||r.r!==null||r.d!==null||r.rw>0;
+
+function totals(){
+  const R=rows();
+  const weeks=R.filter(r=>(r.a||0)>0).length;            // active window: weeks with work waiting, stopped weeks included
+  const cap=R.reduce((s,r)=>s+(r.swan?0:(r.r||0)),0);
+  const done=R.reduce((s,r)=>s+(r.swan?0:(r.d||0)),0);
+  const spare=R.reduce((s,r)=>s+(!r.swan&&r.r!==null?(r.r-(r.d||0)):0),0);
+  const stopped=R.filter(r=>r.swan).length;
+  const rw=R.reduce((s,r)=>s+(r.rw||0),0);
+  return {weeks,cap,done,spare,stopped,rw,util:cap?done/cap:null,flow:weeks?done/weeks:null};
+}
+
+function carry(i){ // leftover from week i-1 becomes week i's starting pile
+  if(i<=0)return null;const p=rows()[i-1];
+  if(p.a===null)return null;
+  return p.swan?p.a:(p.d!==null?p.a-p.d:null);
+}
+
+function renderTradePick(){
+  $("tradeSel").innerHTML=`<option value="">Choose your trade…</option>`+TRADES.map((t,i)=>`<option value="${i+1}" ${String(st.trade)===String(i+1)?"selected":""}>${i+1} · ${esc(t)}</option>`).join("");
+}
+
+function renderEditor(){
+  const r=rows()[st.cur];
+  $("wk-title").textContent="Week "+(st.cur+1);
+  $("prev").disabled=st.cur===0; $("nextw").disabled=st.cur===WEEKS-1;
+  $("stoppedBox").hidden=!r.swan; $("liveWeek").hidden=r.swan;
+  if(r.swan)return;
+  $("avail").value=r.a===null?"":r.a;
+  $("rw").textContent=r.rw||0;
+  $("rwMinus").disabled=!(r.rw>0);
+  $("rolls").innerHTML=[1,2,3,4,5,6].map(n=>`<button class="pip" data-r="${n}" aria-pressed="${r.r===n}">${n}</button>`).join("");
+  const cap=Math.min(r.a??6, r.r??6), suggest=(r.a!==null&&r.r!==null)?Math.min(r.a,r.r):null;
+  $("dones").innerHTML=[0,1,2,3,4,5,6].map(n=>`<button class="pip${n===suggest&&r.d===null?" suggest":""}" data-d="${n}" aria-pressed="${r.d===n}" ${n>cap?"disabled":""}>${n}</button>`).join("");
+  $("spare").textContent=r.r===null?"–":(r.r-(r.d||0));
+  let m="";
+  if(r.a!==null&&r.d!==null&&r.d>r.a)m="You cannot move more batches than you had waiting.";
+  else if(r.r!==null&&r.d!==null&&r.d>r.r)m="You cannot move more batches than your roll.";
+  $("msg").textContent=m;
+  $("save").textContent=st.cur<WEEKS-1?`Save and go to week ${st.cur+2}`:`Save week ${WEEKS}`;
+  $("swan").disabled=st.cur>WEEKS-SWAN_LEN;
+  $("swan").textContent=`Black Swan: stop weeks ${st.cur+1}–${Math.min(WEEKS,st.cur+SWAN_LEN)}`;
+  $("rolls").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{r.r=+b.dataset.r;if(r.d!==null&&r.d>Math.min(r.r,r.a??6))r.d=null;commit()});
+  $("dones").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{r.d=+b.dataset.d;commit()});
+}
+
+function renderResults(){
+  const t=totals();
+  const pct=v=>v===null?"–":Math.round(v*100)+"%";
+  $("tiles").innerHTML=`
+<div class="tile key"><span class="v">${pct(t.util)}</span><span class="k">Utilisation: how well you were used as a resource (work done ÷ total capacity)</span></div>
+<div class="tile key"><span class="v">${t.flow===null?"–":t.flow.toFixed(2)}</span><span class="k">Flow: batches per active week through your step (velocity)</span></div>
+<div class="tile"><span class="v">${t.done}</span><span class="k">Work done, rework included (scope ${TARGET})</span><div class="bar"><i style="width:${Math.min(100,t.done/TARGET*100)}%"></i></div></div>
+<div class="tile"><span class="v">${t.cap}</span><span class="k">Total capacity (sum of your rolls)</span></div>
+<div class="tile"><span class="v">${t.weeks}</span><span class="k">Weeks in your active window, stopped weeks included</span></div>
+<div class="tile"><span class="v">${t.spare}</span><span class="k">Spare capacity in total</span></div>
+<div class="tile"><span class="v">${t.stopped}</span><span class="k">Weeks lost to Black Swans</span></div>
+<div class="tile"><span class="v">${t.rw}</span><span class="k">Rework batches you received</span></div>`;
+}
+
+function renderLog(){
+  const R=rows();
+  const last=Math.max(st.cur,...R.map((r,i)=>filled(r)?i:-1));
+  const show=Math.min(WEEKS,Math.max(last+3,8));
+  $("log").innerHTML=R.slice(0,show).map((r,i)=>{
+    const f=v=>v===null?"·":v;
+    if(r.swan)return `<tr data-i="${i}" class="swan ${i===st.cur?"cur":""}"><td>${i+1}</td><td>${f(r.a)}</td><td colspan="4" style="text-align:left;font-family:var(--f-display);font-weight:700;letter-spacing:.04em">BLACK SWAN</td></tr>`;
+    return `<tr data-i="${i}" class="${i===st.cur?"cur":""} ${filled(r)?"":"blank"}"><td>${i+1}</td><td>${f(r.a)}</td><td>${r.rw?r.rw:"·"}</td><td>${f(r.r)}</td><td>${f(r.d)}</td><td>${r.r===null?"·":r.r-(r.d||0)}</td></tr>`}).join("");
+  const t=totals();
+  $("totals").innerHTML=`<tr><td>Total</td><td>${t.weeks} wks</td><td>${t.rw}</td><td>${t.cap}</td><td>${t.done}</td><td>${t.spare}</td></tr>`;
+  $("log").querySelectorAll("tr").forEach(tr=>tr.onclick=()=>{st.cur=+tr.dataset.i;save();render();$("wk-title").scrollIntoView({behavior:"smooth",block:"center"})});
+}
+
+function setA(v,fromInput){const r=rows()[st.cur];r.a=(v===null||isNaN(v))?null:Math.max(0,Math.min(60,v));
+  if(r.d!==null&&r.a!==null&&r.d>r.a)r.d=null;save();
+  if(fromInput){const keep=$("avail").value;render();$("avail").value=keep;$("avail").focus()}else render()}
+$("avail").oninput=e=>{const v=e.target.value;setA(v===""?null:parseInt(v,10),true)};
+$("aMinus").onclick=()=>setA(Math.max(0,(rows()[st.cur].a??1)-1));
+$("aPlus").onclick=()=>setA((rows()[st.cur].a??-1)+1);
+$("rwPlus").onclick=()=>{const r=rows()[st.cur];r.rw=(r.rw||0)+1;setA((r.a??0)+1)};
+$("rwMinus").onclick=()=>{const r=rows()[st.cur];if(!(r.rw>0))return;r.rw--;setA(Math.max(0,(r.a??1)-1))};
+$("prev").onclick=()=>{st.cur=Math.max(0,st.cur-1);save();render()};
+$("nextw").onclick=()=>{st.cur=Math.min(WEEKS-1,st.cur+1);save();render()};
+$("save").onclick=()=>{
+  const r=rows()[st.cur];
+  if(r.a!==null&&r.r!==null&&r.d===null)r.d=Math.min(r.a,r.r);
+  if(st.cur<WEEKS-1){st.cur++;const n=rows()[st.cur];if(n.a===null){const c=carry(st.cur);if(c!==null)n.a=c}}
+  commit();$("wk-title").scrollIntoView({behavior:"smooth",block:"center"});
+};
+$("swan").onclick=()=>{
+  const start=st.cur;const R=rows();
+  let pile=R[start].a!==null?R[start].a:carry(start);
+  for(let k=0;k<SWAN_LEN&&start+k<WEEKS;k++){
+    const row=R[start+k];const keepRw=row.rw||0;
+    Object.assign(row,{swan:true,r:null,d:null,rw:keepRw,a:pile});
+  }
+  st.cur=Math.min(WEEKS-1,start+SWAN_LEN);
+  const n=R[st.cur];if(!n.swan&&n.a===null&&pile!==null)n.a=pile;
+  commit();$("wk-title").scrollIntoView({behavior:"smooth",block:"center"});
+};
+$("undoSwan").onclick=()=>{ // clears the whole run of stopped weeks this one belongs to
+  const R=rows();let s=st.cur,e=st.cur;
+  while(s>0&&R[s-1].swan)s--;while(e<WEEKS-1&&R[e+1].swan)e++;
+  for(let i=s;i<=e;i++){R[i].swan=false;if(i>s)R[i].a=null}
+  st.cur=s;commit();
+};
+
+/* ---------- CUSTOMER ---------- */
+function cOutcome(c){
+  if(c.swan&&c.roll===null)return {kind:"stopped",text:"Stopped by Black Swan"};
+  if(c.roll===null)return null;
+  if(c.roll===6){
+    if(c.second===null)return {kind:"pending",text:"Rolled a 6: roll again. Another 6 is a Black Swan."};
+    if(c.second===6)return {kind:"swan",text:"Black Swan: everyone stops 3 weeks"};
+    return {kind:"ok",text:"Accepted"};
+  }
+  if(c.roll<=2){
+    if(c.second===null)return {kind:"pending",text:"Batch fails acceptance: roll again for where it goes back to."};
+    if(c.second===6)return {kind:"false",text:"False alarm: nothing goes back"};
+    return {kind:"reject",to:c.second,text:`1 batch back to ${c.second} · ${TRADES[c.second-1]}`};
+  }
+  return {kind:"ok",text:"Accepted"};
+}
+
+function applyCSwan(i){ // the swan week is the first of three stopped weeks
+  const C=st.crows;
+  for(let k=1;k<SWAN_LEN&&i+k<WEEKS;k++)Object.assign(C[i+k],{swan:true,roll:null,second:null});
+}
+function clearCSwan(i){const C=st.crows;for(let k=1;k<SWAN_LEN&&i+k<WEEKS;k++)if(C[i+k].swan&&C[i+k].roll===null)C[i+k].swan=false}
+
+function renderCEditor(){
+  const c=st.crows[st.ccur];
+  $("cwk-title").textContent="Week "+(st.ccur+1);
+  $("cprev").disabled=st.ccur===0;$("cnextw").disabled=st.ccur===WEEKS-1;
+  const stopped=c.swan&&c.roll===null;
+  $("cStoppedBox").hidden=!stopped;$("cLive").hidden=stopped;
+  if(stopped)return;
+  $("crolls").innerHTML=[1,2,3,4,5,6].map(n=>`<button class="pip" data-c="${n}" aria-pressed="${c.roll===n}">${n}</button>`).join("");
+  const need2=c.roll===6||(c.roll!==null&&c.roll<=2);
+  $("c2step").hidden=!need2;
+  if(c.roll===6){
+    $("lab-c2").innerHTML=`Second roll <small>Only another 6 brings a Black Swan</small>`;
+    $("c2").className="pips";
+    $("c2").innerHTML=[1,2,3,4,5,6].map(n=>`<button class="pip" data-s="${n}" aria-pressed="${c.second===n}">${n}</button>`).join("");
+  }else if(need2){
+    $("lab-c2").innerHTML=`Second roll: where does the batch go back to? <small>The trade adds it to its pile and redoes it</small>`;
+    $("c2").className="dest";
+    $("c2").innerHTML=[1,2,3,4,5,6].map(n=>`<button data-s="${n}" aria-pressed="${c.second===n}"><b>${n}</b><span>${n<6?esc(TRADES[n-1]):"False alarm"}</span></button>`).join("");
+  }
+  const o=cOutcome(c);
+  $("cverdict").hidden=!o;
+  if(o)$("cverdict").innerHTML=o.kind==="reject"?`<b>Hand 1 batch from the finished pile to ${esc(TRADES[o.to-1])}.</b>`:o.kind==="swan"?`<b>Black Swan.</b> Tell every trade to press the Black Swan button. Weeks ${st.ccur+1}–${Math.min(WEEKS,st.ccur+SWAN_LEN)} are stopped.`:esc(o.text);
+  $("csave").textContent=st.ccur<WEEKS-1?`Save and go to week ${nextLiveC(st.ccur)+1}`:`Save week ${WEEKS}`;
+  $("crolls").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
+    const wasSwan=c.roll===6&&c.second===6;
+    c.roll=+b.dataset.c;c.second=null;if(wasSwan)clearCSwan(st.ccur);commit()});
+  $("c2").querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{
+    const wasSwan=c.roll===6&&c.second===6;
+    c.second=+b.dataset.s;
+    if(c.roll===6&&c.second===6)applyCSwan(st.ccur);else if(wasSwan)clearCSwan(st.ccur);
+    commit()});
+}
+function nextLiveC(i){let j=Math.min(WEEKS-1,i+1);while(j<WEEKS-1&&st.crows[j].swan&&st.crows[j].roll===null)j++;return j}
+
+function renderCResults(){
+  const C=st.crows;const outs=C.map(cOutcome).filter(Boolean);
+  const swans=outs.filter(o=>o.kind==="swan").length;
+  const stopped=outs.filter(o=>o.kind==="stopped").length+swans;
+  const rej=outs.filter(o=>o.kind==="reject");
+  const fa=outs.filter(o=>o.kind==="false").length;
+  $("ctiles").innerHTML=`
+<div class="tile key"><span class="v">${rej.length}</span><span class="k">Batches rejected</span></div>
+<div class="tile key"><span class="v">${swans}</span><span class="k">Black Swans (${stopped} weeks stopped)</span></div>
+<div class="tile"><span class="v">${fa}</span><span class="k">False alarms</span></div>`;
+  const by=TRADES.map((t,i)=>rej.filter(o=>o.to===i+1).length);const mx=Math.max(1,...by);
+  $("chbars").innerHTML=TRADES.map((t,i)=>`<div class="hb"><span>${i+1} · ${esc(t)}</span><span class="track"><i style="width:${by[i]/mx*100}%"></i></span><b>${by[i]}</b></div>`).join("");
+}
+
+function renderCLog(){
+  const C=st.crows;
+  const last=Math.max(st.ccur,...C.map((c,i)=>(c.roll!==null||c.swan)?i:-1));
+  const show=Math.min(WEEKS,Math.max(last+3,8));
+  $("clog").innerHTML=C.slice(0,show).map((c,i)=>{
+    const o=cOutcome(c);const sw=o&&(o.kind==="stopped");
+    return `<tr data-i="${i}" class="${i===st.ccur?"cur":""} ${sw?"swan":""} ${o?"":"blank"}"><td>${i+1}</td><td>${c.roll??"·"}</td><td>${c.second??"·"}</td><td class="l">${o?esc(o.kind==="pending"?"Waiting for second roll":o.text):"·"}</td></tr>`}).join("");
+  $("clog").querySelectorAll("tr").forEach(tr=>tr.onclick=()=>{st.ccur=+tr.dataset.i;save();render();$("cwk-title").scrollIntoView({behavior:"smooth",block:"center"})});
+}
+$("cprev").onclick=()=>{st.ccur=Math.max(0,st.ccur-1);save();render()};
+$("cnextw").onclick=()=>{st.ccur=Math.min(WEEKS-1,st.ccur+1);save();render()};
+$("csave").onclick=()=>{if(st.ccur<WEEKS-1)st.ccur=nextLiveC(st.ccur);commit();$("cwk-title").scrollIntoView({behavior:"smooth",block:"center"})};
+$("cUndoSwan").onclick=()=>{let i=st.ccur;const C=st.crows;while(i>0&&C[i].roll===null&&C[i].swan)i--;
+  if(C[i].roll===6&&C[i].second===6){C[i].second=null;clearCSwan(i)}st.ccur=i;commit()};
+
+/* ---------- shell ---------- */
+function bindReset(wrap,label,fn){
+  $(wrap).innerHTML=`<button class="linkbtn">Clear ${label}</button>`;
+  $(wrap).firstChild.onclick=()=>{
+    $(wrap).innerHTML=`<span class="confirm">Clear all ${WEEKS} weeks? <button>Keep</button><button class="danger">Clear</button></span>`;
+    const [no,yes]=$(wrap).querySelectorAll("button");
+    no.onclick=()=>bindReset(wrap,label,fn);
+    yes.onclick=()=>{fn();commit();bindReset(wrap,label,fn)};
+  };
+}
+function render(){
+  const t=st.role==="trade";
+  $("roleTrade").setAttribute("aria-pressed",t);$("roleCust").setAttribute("aria-pressed",!t);
+  $("tradeView").hidden=!t;$("custView").hidden=t;$("custView").style.display=t?"none":"flex";
+  if(t){renderTradePick();renderEditor();renderResults();renderLog()}
+  else{renderCEditor();renderCResults();renderCLog()}
+}
+function commit(){save();render()}
+$("roleTrade").onclick=()=>{st.role="trade";commit()};
+$("roleCust").onclick=()=>{st.role="customer";commit()};
+$("tradeSel").onchange=e=>{st.trade=e.target.value;save()};
+bindReset("resetwrap","my worksheet",()=>{st.rows=Array.from({length:WEEKS},blankRow);st.cur=0});
+bindReset("cresetwrap","the customer log",()=>{st.crows=Array.from({length:WEEKS},blankC);st.ccur=0});
+render();
+</script>
+
+</body></html>
